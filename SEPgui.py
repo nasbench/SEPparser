@@ -152,7 +152,24 @@ class Pre_process:
         self.right_frame.grid_columnconfigure(0, weight=1)
         
         self.v = StringVar(value="-d")
+        self.kapemode = StringVar(value="")
+        self.output = StringVar(value="")
         self.path = StringVar(value="c:/")
+        self.path.trace_add('write', self.check_expression)
+        self.outpath = StringVar(value="")
+        self.outpath.trace_add('write', self.check_expression)
+        self.append = StringVar(value="")
+        self.tvalue = IntVar()
+        self.tz = StringVar(value=' ')
+        self.tzdata = StringVar()
+        self.tzdata.trace_add('write', self.check_expression)
+        self.logging = StringVar()
+        self.verbose = StringVar()
+        self.e = StringVar()
+        self.qd = StringVar()
+        self.hd = StringVar()
+        self.hf = StringVar()
+        self.eb = StringVar()
 
         self.lbl1 = Label(self.top_frame,
                           text="Directory/Folder Input:")
@@ -171,76 +188,133 @@ class Pre_process:
                                  value="-f",
                                  command=self.check_expression)
 
-        self.ent1 = Entry(self.top_frame, width=25, textvariable=self.path)
+        self.ent1 = Entry(self.top_frame,
+                          width=25,
+                          textvariable=self.path)
 
         self.btn1 = Button(self.top_frame, text='...', command=lambda: self.callback())
 
         self.cbx1 = Checkbutton(self.top_frame,
-                                text="Kape Mode")
+                                text="Kape Mode",
+                                offvalue="",
+                                onvalue="-k",
+                                var=self.kapemode,
+                                command=self.check_expression)
 
         self.lbl2 = Label(self.top_frame,
-                          text="Output Directory:")
+                          text="Output:")
 
         self.cbx2 = Checkbutton(self.top_frame,
-                                text="Output Directory")
+                                text="Output Directory",
+                                offvalue="",
+                                onvalue="-o",
+                                var=self.output,
+                                command=lambda:[self.check_expression(), self.outcheck()])
 
-        self.ent2 = Entry(self.top_frame, width=25, textvariable=self.path)
+        self.ent2 = Entry(self.top_frame,
+                          width=25,
+                          textvariable=self.outpath,
+                          state='disabled')
 
-        self.btn2 = Button(self.top_frame, text='...', command=lambda: self.callback())
+        self.btn2 = Button(self.top_frame,
+                           text='...',
+                           state='disabled',
+                           command=lambda: self.callback2())
 
         self.cbx3 = Checkbutton(self.top_frame,
-                       text="Append")
+                                text="Append",
+                                offvalue="",
+                                onvalue="-a",
+                                var=self.append,
+                                command=self.check_expression)
 
         self.lbl3 = Label(self.left_frame,
                           text="Time Zone")
 
-        self.cbx4 = Checkbutton(self.left_frame)
+        self.cbx4 = Checkbutton(self.left_frame,
+                                offvalue=0,
+                                onvalue=1,
+                                var=self.tvalue,
+                                command=self.tcheck)
 
         self.rbtn3 = Radiobutton(self.left_frame,
                                  text="Offset",
                                  justify=LEFT,
-                                 variable=self.v,
-                                 value="-d",
+                                 variable=self.tz,
+                                 value="-tz",
+                                 state='disabled',
                                  command=self.check_expression)
 
-        self.ent3 = Entry(self.left_frame, width=25, textvariable=self.path)
+        self.ent3 = Entry(self.left_frame,
+                          width=25,
+                          state='disabled',
+                          textvariable=self.tzdata)
 
         self.rbtn4 = Radiobutton(self.left_frame,
                                  text="registrationInfo.xml",
                                  justify=LEFT,
-                                 variable=self.v,
-                                 value="-f",
+                                 variable=self.tz,
+                                 value="-r",
+                                 state='disabled',
                                  command=self.check_expression)
 
         self.lbl4 = Label(self.left_frame,
                           text="Logging")
 
         self.cbx5 = Checkbutton(self.left_frame,
-                       text="Enabled")
+                                text="Enabled",
+                                offvalue="",
+                                onvalue="-l",
+                                var=self.logging,
+                                command=self.check_expression)
 
         self.cbx6 = Checkbutton(self.left_frame,
-                       text="Verbos")
+                                text="Verbose",
+                                offvalue="",
+                                onvalue="-v",
+                                var=self.verbose,
+                                command=self.check_expression)
 
         self.lbl5 = Label(self.left_frame,
                           text="VBN Options")
 
         self.cbx7 = Checkbutton(self.left_frame,
-                       text="Extract")
+                                text="Extract",
+                                offvalue="",
+                                onvalue="-e",
+                                var=self.e,
+                                command=self.check_expression)
 
         self.cbx8 = Checkbutton(self.left_frame,
-                       text="Quarantine Dump")
+                                text="Quarantine Dump",
+                                offvalue="",
+                                onvalue="-qd",
+                                var=self.qd,
+                                command=self.check_expression)
 
         self.cbx9 = Checkbutton(self.left_frame,
-                       text="Hex Dump")
+                                text="Hex Dump",
+                                offvalue="",
+                                onvalue="-hd",
+                                var=self.hd,
+                                command=self.check_expression)
 
         self.cbx10 = Checkbutton(self.left_frame,
-                       text="Hash File")
+                                 text="Hash File",
+                                 offvalue="",
+                                 onvalue="-hf",
+                                 var=self.hf,
+                                 command=self.check_expression)
 
         self.lbl6 = Label(self.left_frame,
-                          text="ccSubSDK")
+                          text="ccSubSDK",)
 
         self.cbx11 = Checkbutton(self.left_frame,
-                       text="Extract Blob")
+                                 text="Extract Blob",
+                                 offvalue="",
+                                 onvalue="-eb",
+                                 var=self.eb,
+                                 command=self.check_expression)
 
         self.outputtext2 = Text(self.right_frame)
 
@@ -287,13 +361,41 @@ class Pre_process:
 
         self.button.wait_variable(self.var)
 
-    def check_expression(self):
+    def check_expression(self, *args):
         # Your code that checks the expression
         self.outputtext.config(state=NORMAL)
         varContent = self.v.get()  # get what's written in the inputentry entry widget
         pathContent = self.path.get()
+        # Optional arguments
+        opt = ''
+        if len(self.output.get()) > 1:
+            opt += f' {self.output.get()}'
+        if len(self.outpath.get()) > 0:
+            opt += f' "{self.outpath.get()}"'
+        if len(self.kapemode.get()) > 1:
+            opt += f' {self.kapemode.get()}'
+        if len(self.append.get()) > 1:
+            opt += f' {self.append.get()}'
+        if len(self.tz.get()) > 1:
+            opt += f' {self.tz.get()}'
+        if len(self.tzdata.get()) > 1:
+            opt += f' {self.tzdata.get()}'
+        if len(self.logging.get()) > 1:
+            opt += f' {self.logging.get()}'
+        if len(self.verbose.get()) > 1:
+            opt += f' {self.verbose.get()}'
+        if len(self.e.get()) > 1:
+            opt += f' {self.e.get()}'
+        if len(self.qd.get()) > 1:
+            opt += f' {self.qd.get()}'
+        if len(self.hd.get()) > 1:
+            opt += f' {self.hd.get()}'
+        if len(self.hf.get()) > 1:
+            opt += f' {self.hf.get()}'
+        if len(self.eb.get()) > 1:
+            opt += f' {self.eb.get()}'
         self.outputtext.delete(1.0, END)  # clear the outputtext text widget
-        self.outputtext.insert(END, f'{varContent} "{pathContent}"')
+        self.outputtext.insert(END, f'{varContent} "{pathContent}"{opt}')
         self.outputtext.config(state=DISABLED)
 
     def callback(self):
@@ -304,6 +406,37 @@ class Pre_process:
         self.path.set(_)
         self.check_expression()
 
+    def callback2(self):
+        if self.output.get() == "-o":
+            _ = filedialog.askdirectory(initialdir='C:/', title='Select Directory')
+        else:
+            _ = ''
+        self.outpath.set(_)
+        self.check_expression()
+
+    def outcheck(self):
+        if self.output.get() == "-o":
+            self.ent2.configure(state='normal')
+            self.btn2.configure(state='normal')
+            self.outpath.set('.')
+        else:
+            self.ent2.configure(state='disable')
+            self.btn2.configure(state='disable')
+            self.outpath.set('')
+        self.check_expression()
+
+    def tcheck(self):
+        if self.tvalue.get() == 1:
+            self.rbtn3.configure(state='normal')
+            self.rbtn4.configure(state='normal')
+            self.ent3.configure(state='normal')
+        else:
+            self.rbtn3.configure(state='disable')
+            self.rbtn4.configure(state='disable')
+            self.ent3.configure(state='disable')
+            self.tz.set(' ')
+            self.tzdata.set(' ')
+        self.check_expression()
 
 def main():
     root = Tk()
