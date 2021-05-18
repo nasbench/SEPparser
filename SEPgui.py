@@ -1,6 +1,8 @@
 from tksheet import Sheet
 from tkinter import *
 from tkinter import filedialog
+import subprocess
+import threading
 import pandas as pd
 
 
@@ -107,7 +109,7 @@ class Post_process:
         self.btm_frame.grid_columnconfigure(1, weight=1)
 
         self.btn = Button(self.top_frame, text="Help", command=lambda: ViewLogs(self.btm_right))
-        
+
         self.btm_left = Frame(self.btm_frame, bg='blue', width=100, height=300)
         self.btm_right = Frame(self.btm_frame, bg='yellow', width=350, height=300)
 
@@ -145,12 +147,12 @@ class Pre_process:
         self.left_frame.grid(row=0, column=0, sticky="ns")
         self.right_frame.grid(row=0, column=1, sticky="nsew")
         self.bottom_frame.grid(row=2, column=0, sticky="ew")
-        
+
         self.center_frame.grid_rowconfigure(0, weight=1)
         self.center_frame.grid_columnconfigure(1, weight=1)
         self.right_frame.grid_rowconfigure(0, weight=1)
         self.right_frame.grid_columnconfigure(0, weight=1)
-        
+
         self.v = StringVar(value="-d")
         self.kapemode = StringVar(value="")
         self.output = StringVar(value="")
@@ -170,6 +172,7 @@ class Pre_process:
         self.hd = StringVar()
         self.hf = StringVar()
         self.eb = StringVar()
+        self.cmd = StringVar()
 
         self.lbl1 = Label(self.top_frame,
                           text="Directory/Folder Input:")
@@ -325,7 +328,8 @@ class Pre_process:
         self.check_expression()
 
         self.var = IntVar()
-        self.button = Button(self.bottom_frame, text="Click Me", command=lambda: self.var.set(1))
+        self.button = Button(self.bottom_frame, text="Click Me", command=lambda: Post_process(root))
+        self.button2 = Button(self.bottom_frame, text="run", command=lambda: threading.Thread(target=self.execute).start())
 
         # layout the widgets in the main frame
         self.lbl1.grid(row=0, column=0, columnspan=5, sticky="w")
@@ -358,8 +362,7 @@ class Pre_process:
         self.lbl7.grid(row=0, column=0, sticky="w")
         self.outputtext.grid(row=1, column=0)
         self.button.grid(row=2)
-
-        self.button.wait_variable(self.var)
+        self.button2.grid(row=3)
 
     def check_expression(self, *args):
         # Your code that checks the expression
@@ -397,6 +400,7 @@ class Pre_process:
         self.outputtext.delete(1.0, END)  # clear the outputtext text widget
         self.outputtext.insert(END, f'{varContent} "{pathContent}"{opt}')
         self.outputtext.config(state=DISABLED)
+        self.cmd.set(f'{varContent} "{pathContent}"{opt}')
 
     def callback(self):
         if self.v.get() == "-d":
@@ -438,20 +442,29 @@ class Pre_process:
             self.tzdata.set(' ')
         self.check_expression()
 
+    def execute(self):
+        self.outputtext2.delete('1.0', END)
+        cmdlist = "py.exe -3 -u SEPparser2.py " + self.cmd.get()
+        proc = subprocess.Popen(cmdlist, stdout=subprocess.PIPE)
+        while True:
+            line = proc.stdout.readline()
+            if not line:
+                break
+            self.outputtext2.insert(END, line)
+            self.outputtext2.see(END)
+            self.outputtext2.update_idletasks()
+
 def main():
     root = Tk()
     root.title('SEPparser GUI')
     root.geometry('{}x{}'.format(460, 350))
-    
+
     # layout all of the main containers
     root.grid_rowconfigure(1, weight=1)
     root.grid_columnconfigure(0, weight=1)
 
     # create all of the main containers
     Pre_process(root)
-    Post_process(root)
-
-
 
     root.mainloop()
 
