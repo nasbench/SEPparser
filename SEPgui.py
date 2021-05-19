@@ -15,20 +15,22 @@ class ViewLogs:
         self.btm_right.grid_rowconfigure(0, weight=1)
         self.frame = Frame(self.btm_right)
 
-        self.btn = Button(self.btm_right, text="Symantec Client Management Control Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_Control_Log.csv', 0))
-        self.btn2 = Button(self.btm_right, text="Symantec Client Management Security Logs", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_Security_Log.csv', 0))
-        self.btn3 = Button(self.btm_right, text="Symantec Client Management System Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_System_Log.csv', 0))
-        self.btn4 = Button(self.btm_right, text="Symantec Client Management Tamper Protect Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_Tamper_Protect_Log.csv', 0))
-        self.btn5 = Button(self.btm_right, text="Symantec Network and Host Exploit Mitigation Packet Log", command=lambda: readcsv(self.btm_right, 'Symantec_Network_and_Host_Exploit_Mitigation_Packet_Log.csv', 0))
-        self.btn6 = Button(self.btm_right, text="Symantec Network and Host Exploit Mitigation Traffic Log", command=lambda: readcsv(self.btm_right, 'Symantec_Network_and_Host_Exploit_Mitigation_Traffic_Log.csv', 0))
-        self.btn7 = Button(self.btm_right, text="View Timeline", command=lambda: readcsv(self.btm_right, 'Symantec_Timeline.csv', 0))
-        self.btn.grid(row=0, column=0, sticky="ew")
-        self.btn2.grid(row=1, column=0, sticky="ew")
-        self.btn3.grid(row=2, column=0, sticky="ew")
-        self.btn4.grid(row=3, column=0, sticky="ew")
-        self.btn5.grid(row=4, column=0, sticky="ew")
-        self.btn6.grid(row=5, column=0, sticky="ew")
-        self.btn7.grid(row=6, column=0, sticky="ew")
+        self.menua = Menubutton(self.btm_right, text="Network and Host Exploit Mitigation")
+        self.menua.menu = Menu(self.menua, tearoff=0)
+        self.menua["menu"] = self.menua.menu
+        self.menua.menu.add_command(label="Traffic Log", command=lambda: readcsv(self.btm_right, 'Symantec_Network_and_Host_Exploit_Mitigation_Traffic_Log.csv', 0))
+        self.menua.menu.add_command(label="Packet Log", command=lambda: readcsv(self.btm_right, 'Symantec_Network_and_Host_Exploit_Mitigation_Packet_Log.csv', 0))
+
+        self.menub = Menubutton(self.btm_right, text="Client Management")
+        self.menub.menu = Menu(self.menub, tearoff=0)
+        self.menub["menu"] = self.menub.menu
+        self.menub.menu.add_command(label="Control Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_Control_Log.csv', 0))
+        self.menub.menu.add_command(label="Security Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_Security_Log.csv', 0))
+        self.menub.menu.add_command(label="System Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_System_Log.csv', 0))
+        self.menub.menu.add_command(label="Tamper Protect Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_Tamper_Protect_Log.csv', 0))
+
+        self.menua.grid(row=0, column=0, sticky="ew")
+        self.menub.grid(row=1, column=0, sticky="ew")
 
 
 class Status:
@@ -44,9 +46,9 @@ class Status:
         self.btn2 = Button(self.btm_right, text="Test2", command=lambda: readcsv(self.btm_right, 'settings.csv', 0))
         self.btn3 = Button(self.btm_right, text="Test3", command=lambda: readcsv(self.btm_right, 'settings.csv', 0))
 
-        self.btn.grid(row=0, column=0, sticky="ew")
-        self.btn2.grid(row=1, column=0, sticky="ew")
-        self.btn3.grid(row=2, column=0, sticky="ew")
+        self.btn.grid(row=1, column=0, sticky="ew")
+        self.btn2.grid(row=2, column=0, sticky="ew")
+        self.btn3.grid(row=3, column=0, sticky="ew")
 
 
 class readcsv:
@@ -96,8 +98,9 @@ class readcsv:
 
 
 class Post_process:
-    def __init__(self, root):
+    def __init__(self, root, outpath):
         self.root = root
+        self.outpath = outpath
         for widgets in self.root.winfo_children():
             widgets.destroy()
         self.top_frame = Frame(self.root, bg='cyan', width=450, height=50, pady=3)
@@ -118,8 +121,8 @@ class Post_process:
 
         self.btn1 = Button(self.btm_left, text="Status", command=lambda: Status(self.btm_right))
         self.btn2 = Button(self.btm_left, text="Scan for Threats", command=lambda: None)
-        self.btn3 = Button(self.btm_left, text="View Settings", command=lambda: readcsv(self.btm_right, 'settings.csv', 1))
-        self.btn4 = Button(self.btm_left, text="View Quarantine", command=lambda: readcsv(self.btm_right, 'quarantine.csv', 1))
+        self.btn3 = Button(self.btm_left, text="View Settings", command=lambda: readcsv(self.btm_right, self.outpath + '\settings.csv', 1))
+        self.btn4 = Button(self.btm_left, text="View Quarantine", command=lambda: readcsv(self.btm_right, self.outpath + '\quarantine.csv', 1))
         self.btn5 = Button(self.btm_left, text="View Logs", command=lambda: ViewLogs(self.btm_right))
 
         self.btn.grid(row=0, column=2, sticky="e")
@@ -195,7 +198,8 @@ class Pre_process:
                           width=25,
                           textvariable=self.path)
 
-        self.btn1 = Button(self.top_frame, text='...', command=lambda: self.callback())
+        self.btn1 = Button(self.top_frame, text='...',
+                           command=lambda: self.callback())
 
         self.cbx1 = Checkbutton(self.top_frame,
                                 text="Kape Mode",
@@ -319,7 +323,13 @@ class Pre_process:
                                  var=self.eb,
                                  command=self.check_expression)
 
-        self.outputtext2 = Text(self.right_frame)
+        self.scrollb = Scrollbar(self.right_frame)
+
+        self.outputtext2 = Text(self.right_frame,
+                                yscrollcommand=self.scrollb.set,
+                                state='disabled')
+
+        self.scrollb.config(command=self.outputtext2.yview)
 
         self.lbl7 = Label(self.bottom_frame,
                           text="Current command line")
@@ -328,8 +338,14 @@ class Pre_process:
         self.check_expression()
 
         self.var = IntVar()
-        self.button = Button(self.bottom_frame, text="Click Me", command=lambda: Post_process(root))
-        self.button2 = Button(self.bottom_frame, text="run", command=lambda: threading.Thread(target=self.execute).start())
+
+        self.button = Button(self.bottom_frame,
+                             text="Click Me",
+                             command=lambda: Post_process(root, self.outpath.get()))
+
+        self.button2 = Button(self.bottom_frame,
+                              text="run",
+                              command=lambda: threading.Thread(target=self.execute).start())
 
         # layout the widgets in the main frame
         self.lbl1.grid(row=0, column=0, columnspan=5, sticky="w")
@@ -359,6 +375,7 @@ class Pre_process:
         self.lbl6.grid(row=8, column=0, sticky="w")
         self.cbx11.grid(row=9, column=0, sticky="w")
         self.outputtext2.grid(row=0, column=0, columnspan=6, rowspan=10, sticky="nsew")
+        self.scrollb.grid(row=0, column=6, rowspan=10, sticky="nsew")
         self.lbl7.grid(row=0, column=0, sticky="w")
         self.outputtext.grid(row=1, column=0)
         self.button.grid(row=2)
@@ -443,21 +460,24 @@ class Pre_process:
         self.check_expression()
 
     def execute(self):
+        self.outputtext2.config(state=NORMAL)
         self.outputtext2.delete('1.0', END)
         cmdlist = "py.exe -3 -u SEPparser2.py " + self.cmd.get()
         proc = subprocess.Popen(cmdlist, stdout=subprocess.PIPE)
         while True:
             line = proc.stdout.readline()
+            print(line)
             if not line:
                 break
             self.outputtext2.insert(END, line)
             self.outputtext2.see(END)
             self.outputtext2.update_idletasks()
+        self.outputtext2.config(state=DISABLED)
 
 def main():
     root = Tk()
     root.title('SEPparser GUI')
-    root.geometry('{}x{}'.format(460, 350))
+    root.geometry('{}x{}'.format(745, 400))
 
     # layout all of the main containers
     root.grid_rowconfigure(1, weight=1)
