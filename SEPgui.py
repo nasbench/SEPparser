@@ -1,36 +1,47 @@
 from tksheet import Sheet
-from tkinter import *
+import tkinter as tk
+import tkinter.ttk as ttk
 from tkinter import filedialog
+from ttkthemes import ThemedTk
 import subprocess
 import threading
 import pandas as pd
 
 
 class ViewLogs:
-    def __init__(self, btm_right):
+    def __init__(self, btm_right, outpath):
         self.btm_right = btm_right
+        self.outpath = outpath
         for widgets in self.btm_right.winfo_children():
             widgets.destroy()
         self.btm_right.grid_columnconfigure(0, weight=1)
         self.btm_right.grid_rowconfigure(0, weight=1)
-        self.frame = Frame(self.btm_right)
+        self.frame = ttk.Frame(self.btm_right)
 
-        self.menua = Menubutton(self.btm_right, text="Network and Host Exploit Mitigation")
-        self.menua.menu = Menu(self.menua, tearoff=0)
+        self.label1 = ttk.Label(self.btm_right, text="Network and Host Exploit Mitigation")
+        self.label2 = ttk.Label(self.btm_right, text="Protects against Web, network trhreats, and zero-day exploits")
+        self.menua = ttk.Menubutton(self.btm_right, text="View Logs")
+        self.menua.menu = tk.Menu(self.menua, tearoff=0)
         self.menua["menu"] = self.menua.menu
-        self.menua.menu.add_command(label="Traffic Log", command=lambda: readcsv(self.btm_right, 'Symantec_Network_and_Host_Exploit_Mitigation_Traffic_Log.csv', 0))
-        self.menua.menu.add_command(label="Packet Log", command=lambda: readcsv(self.btm_right, 'Symantec_Network_and_Host_Exploit_Mitigation_Packet_Log.csv', 0))
+        self.menua.menu.add_command(label="Traffic Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Traffic_Log.csv', 0))
+        self.menua.menu.add_command(label="Packet Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Packet_Log.csv', 0))
 
-        self.menub = Menubutton(self.btm_right, text="Client Management")
-        self.menub.menu = Menu(self.menub, tearoff=0)
+        self.label3 = ttk.Label(self.btm_right, text="Client Management")
+        self.label4 = ttk.Label(self.btm_right, text="Provides functionality to manage this client")
+        self.menub = ttk.Menubutton(self.btm_right, text="View Logs")
+        self.menub.menu = tk.Menu(self.menub, tearoff=0)
         self.menub["menu"] = self.menub.menu
-        self.menub.menu.add_command(label="Control Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_Control_Log.csv', 0))
-        self.menub.menu.add_command(label="Security Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_Security_Log.csv', 0))
-        self.menub.menu.add_command(label="System Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_System_Log.csv', 0))
-        self.menub.menu.add_command(label="Tamper Protect Log", command=lambda: readcsv(self.btm_right, 'Symantec_Client_Management_Tamper_Protect_Log.csv', 0))
+        self.menub.menu.add_command(label="Control Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Control_Log.csv', 0))
+        self.menub.menu.add_command(label="Security Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Security_Log.csv', 0))
+        self.menub.menu.add_command(label="System Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_System_Log.csv', 0))
+        self.menub.menu.add_command(label="Tamper Protect Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Tamper_Protect_Log.csv', 0))
 
-        self.menua.grid(row=0, column=0, sticky="ew")
-        self.menub.grid(row=1, column=0, sticky="ew")
+        self.label1.grid(row=1, column=0, sticky="ew")
+        self.menua.grid(row=1, column=1, sticky="ew")
+        self.label2.grid(row=2, column=0, sticky="ew")
+        self.label3.grid(row=3, column=0, sticky="ew")
+        self.menub.grid(row=3, column=1, sticky="ew")
+        self.label4.grid(row=4, column=0, sticky="ew")
 
 
 class Status:
@@ -40,11 +51,11 @@ class Status:
             widgets.destroy()
         self.btm_right.grid_columnconfigure(0, weight=1)
         self.btm_right.grid_rowconfigure(0, weight=1)
-        self.frame = Frame(self.btm_right)
+        self.frame = tk.Frame(self.btm_right)
 
-        self.btn = Button(self.btm_right, text="Test1", command=lambda: readcsv(self.btm_right, 'Symantec_Timeline.csv', 0))
-        self.btn2 = Button(self.btm_right, text="Test2", command=lambda: readcsv(self.btm_right, 'settings.csv', 0))
-        self.btn3 = Button(self.btm_right, text="Test3", command=lambda: readcsv(self.btm_right, 'settings.csv', 0))
+        self.btn = tk.Button(self.btm_right, text="Test1", command=lambda: readcsv(self.btm_right, 'Symantec_Timeline.csv', 0))
+        self.btn2 = tk.Button(self.btm_right, text="Test2", command=lambda: readcsv(self.btm_right, 'settings.csv', 0))
+        self.btn3 = tk.Button(self.btm_right, text="Test3", command=lambda: readcsv(self.btm_right, 'settings.csv', 0))
 
         self.btn.grid(row=1, column=0, sticky="ew")
         self.btn2.grid(row=2, column=0, sticky="ew")
@@ -54,7 +65,7 @@ class Status:
 class readcsv:
     def __init__(self, master, log, tl):
         if tl == 0:
-            self.master = Toplevel(master)
+            self.master = tk.Toplevel(master)
         else:
             self.master = master
             for widgets in self.master.winfo_children():
@@ -62,7 +73,7 @@ class readcsv:
         self.log = log
         self.master.grid_columnconfigure(0, weight=1)
         self.master.grid_rowconfigure(0, weight=1)
-        self.frame = Frame(self.master)
+        self.frame = ttk.Frame(self.master)
         self.frame.grid_columnconfigure(0, weight=1)
         self.frame.grid_rowconfigure(0, weight=1)
 
@@ -102,28 +113,31 @@ class Post_process:
         self.root = root
         self.outpath = outpath
         for widgets in self.root.winfo_children():
-            widgets.destroy()
-        self.top_frame = Frame(self.root, bg='cyan', width=450, height=50, pady=3)
-        self.btm_frame = Frame(self.root, bg='gray2')
+            if str(widgets) == ".!menu" or str(widgets) == ".!sizegrip":
+                pass
+            else:
+                widgets.destroy()
+        self.top_frame = ttk.Frame(self.root, width=450, height=50, padding=3)
+        self.btm_frame = ttk.Frame(self.root)
         self.top_frame.grid(row=0, sticky="ew")
         self.btm_frame.grid(row=1, sticky="nsew")
         # create the bottom frame widgets
         self.btm_frame.grid_rowconfigure(0, weight=1)
         self.btm_frame.grid_columnconfigure(1, weight=1)
 
-        self.btn = Button(self.top_frame, text="Help", command=lambda: ViewLogs(self.btm_right))
+        self.btn = ttk.Button(self.top_frame, text="Help", command=lambda: ViewLogs(self.btm_right))
 
-        self.btm_left = Frame(self.btm_frame, bg='blue', width=100, height=300)
-        self.btm_right = Frame(self.btm_frame, bg='yellow', width=350, height=300)
+        self.btm_left = ttk.Frame(self.btm_frame, width=100, height=300)
+        self.btm_right = ttk.Frame(self.btm_frame, width=350, height=300)
 
         self.btm_left.grid(row=0, column=0, sticky="ns")
         self.btm_right.grid(row=0, column=1, sticky="nsew")
 
-        self.btn1 = Button(self.btm_left, text="Status", command=lambda: Status(self.btm_right))
-        self.btn2 = Button(self.btm_left, text="Scan for Threats", command=lambda: None)
-        self.btn3 = Button(self.btm_left, text="View Settings", command=lambda: readcsv(self.btm_right, self.outpath + '\settings.csv', 1))
-        self.btn4 = Button(self.btm_left, text="View Quarantine", command=lambda: readcsv(self.btm_right, self.outpath + '\quarantine.csv', 1))
-        self.btn5 = Button(self.btm_left, text="View Logs", command=lambda: ViewLogs(self.btm_right))
+        self.btn1 = ttk.Button(self.btm_left, text="Status", command=lambda: Status(self.btm_right))
+        self.btn2 = ttk.Button(self.btm_left, text="Scan for Threats", command=lambda: None)
+        self.btn3 = ttk.Button(self.btm_left, text="View Settings", command=lambda: readcsv(self.btm_right, self.outpath + '\settings.csv', 1))
+        self.btn4 = ttk.Button(self.btm_left, text="View Quarantine", command=lambda: readcsv(self.btm_right, self.outpath + '\quarantine.csv', 1))
+        self.btn5 = ttk.Button(self.btm_left, text="View Logs", command=lambda: ViewLogs(self.btm_right, self.outpath))
 
         self.btn.grid(row=0, column=2, sticky="e")
         self.btn1.grid(row=0, column=0, sticky="ew")
@@ -136,15 +150,13 @@ class Post_process:
 class Pre_process:
     def __init__(self, root):
         self.root = root
-        for widgets in self.root.winfo_children():
-            widgets.destroy()
 
         # create all of the main containers
-        self.top_frame = Frame(self.root, bg='cyan')
-        self.center_frame = Frame(self.root, bg='green')
-        self.left_frame = Frame(self.center_frame, bg='green')
-        self.right_frame = Frame(self.center_frame, bg='yellow')
-        self.bottom_frame = Frame(self.root, bg='blue')   
+        self.top_frame = ttk.Frame(self.root, padding=10)
+        self.center_frame = ttk.Frame(self.root, padding=10)
+        self.left_frame = ttk.Frame(self.center_frame)
+        self.right_frame = ttk.Frame(self.center_frame)
+        self.bottom_frame = ttk.LabelFrame(self.root, text="Current command line", padding=10)
         self.top_frame.grid(row=0, column=0, sticky="ew")
         self.center_frame.grid(row=1, column=0, sticky="nsew")
         self.left_frame.grid(row=0, column=0, sticky="ns")
@@ -156,208 +168,207 @@ class Pre_process:
         self.right_frame.grid_rowconfigure(0, weight=1)
         self.right_frame.grid_columnconfigure(0, weight=1)
 
-        self.v = StringVar(value="-d")
-        self.kapemode = StringVar(value="")
-        self.output = StringVar(value="")
-        self.path = StringVar(value="c:/")
+        self.v = tk.StringVar(value="-d")
+        self.kapemode = tk.StringVar(value="")
+        self.output = tk.StringVar(value="")
+        self.path = tk.StringVar(value="c:/")
         self.path.trace_add('write', self.check_expression)
-        self.outpath = StringVar(value="")
+        self.outpath = tk.StringVar(value="")
         self.outpath.trace_add('write', self.check_expression)
-        self.append = StringVar(value="")
-        self.tvalue = IntVar()
-        self.tz = StringVar(value=' ')
-        self.tzdata = StringVar()
+        self.append = tk.StringVar(value="")
+        self.tvalue = tk.IntVar()
+        self.tz = tk.StringVar(value=' ')
+        self.tzdata = tk.StringVar()
         self.tzdata.trace_add('write', self.check_expression)
-        self.logging = StringVar()
-        self.verbose = StringVar()
-        self.e = StringVar()
-        self.qd = StringVar()
-        self.hd = StringVar()
-        self.hf = StringVar()
-        self.eb = StringVar()
-        self.cmd = StringVar()
+        self.logging = tk.StringVar()
+        self.verbose = tk.StringVar()
+        self.e = tk.StringVar()
+        self.qd = tk.StringVar()
+        self.hd = tk.StringVar()
+        self.hf = tk.StringVar()
+        self.eb = tk.StringVar()
+        self.cmd = tk.StringVar()
 
-        self.lbl1 = Label(self.top_frame,
-                          text="Directory/Folder Input:")
+        self.lbl1 = ttk.Label(self.top_frame,
+                              text="Directory/Folder Input:")
 
-        self.rbtn1 = Radiobutton(self.top_frame,
-                                 text="Directory",
-                                 justify=LEFT,
-                                 variable=self.v,
-                                 value="-d",
-                                 command=self.check_expression)
+        self.rbtn1 = ttk.Radiobutton(self.top_frame,
+                                     text="Directory",
+                                     variable=self.v,
+                                     value="-d",
+                                     command=self.check_expression)
 
-        self.rbtn2 = Radiobutton(self.top_frame,
-                                 text="File",
-                                 justify=LEFT,
-                                 variable=self.v,
-                                 value="-f",
-                                 command=self.check_expression)
+        self.rbtn2 = ttk.Radiobutton(self.top_frame,
+                                     text="File",
+                                     variable=self.v,
+                                     value="-f",
+                                     command=self.check_expression)
 
-        self.ent1 = Entry(self.top_frame,
-                          width=25,
-                          textvariable=self.path)
+        self.ent1 = ttk.Entry(self.top_frame,
+                              width=25,
+                              textvariable=self.path)
 
-        self.btn1 = Button(self.top_frame, text='...',
-                           command=lambda: self.callback())
+        self.btn1 = ttk.Button(self.top_frame,
+                               text='...',
+                               width=3,
+                               command=lambda: self.callback())
 
-        self.cbx1 = Checkbutton(self.top_frame,
-                                text="Kape Mode",
-                                offvalue="",
-                                onvalue="-k",
-                                var=self.kapemode,
-                                command=self.check_expression)
+        self.cbx1 = ttk.Checkbutton(self.top_frame,
+                                    text="Kape Mode",
+                                    offvalue="",
+                                    onvalue="-k",
+                                    var=self.kapemode,
+                                    command=self.check_expression)
 
-        self.lbl2 = Label(self.top_frame,
-                          text="Output:")
+        self.lbl2 = ttk.Label(self.top_frame,
+                              text="Output:")
 
-        self.cbx2 = Checkbutton(self.top_frame,
-                                text="Output Directory",
-                                offvalue="",
-                                onvalue="-o",
-                                var=self.output,
-                                command=lambda:[self.check_expression(), self.outcheck()])
+        self.cbx2 = ttk.Checkbutton(self.top_frame,
+                                    text="Output Directory",
+                                    offvalue="",
+                                    onvalue="-o",
+                                    var=self.output,
+                                    command=lambda:[self.check_expression(), self.outcheck()])
 
-        self.ent2 = Entry(self.top_frame,
-                          width=25,
-                          textvariable=self.outpath,
-                          state='disabled')
+        self.ent2 = ttk.Entry(self.top_frame,
+                              width=25,
+                              textvariable=self.outpath,
+                              state='disabled')
 
-        self.btn2 = Button(self.top_frame,
-                           text='...',
-                           state='disabled',
-                           command=lambda: self.callback2())
+        self.btn2 = ttk.Button(self.top_frame,
+                               text='...',
+                               width=3,
+                               state='disabled',
+                               command=lambda: self.callback2())
 
-        self.cbx3 = Checkbutton(self.top_frame,
-                                text="Append",
-                                offvalue="",
-                                onvalue="-a",
-                                var=self.append,
-                                command=self.check_expression)
+        self.cbx3 = ttk.Checkbutton(self.top_frame,
+                                    text="Append",
+                                    offvalue="",
+                                    onvalue="-a",
+                                    var=self.append,
+                                    command=self.check_expression)
 
-        self.lbl3 = Label(self.left_frame,
-                          text="Time Zone")
+        self.lbl3 = ttk.Label(self.left_frame,
+                              text="Time Zone")
 
-        self.cbx4 = Checkbutton(self.left_frame,
-                                offvalue=0,
-                                onvalue=1,
-                                var=self.tvalue,
-                                command=self.tcheck)
+        self.cbx4 = ttk.Checkbutton(self.left_frame,
+                                    offvalue=0,
+                                    onvalue=1,
+                                    var=self.tvalue,
+                                    command=self.tcheck)
 
-        self.rbtn3 = Radiobutton(self.left_frame,
-                                 text="Offset",
-                                 justify=LEFT,
-                                 variable=self.tz,
-                                 value="-tz",
-                                 state='disabled',
-                                 command=self.check_expression)
+        self.rbtn3 = ttk.Radiobutton(self.left_frame,
+                                     variable=self.tz,
+                                     value="-tz",
+                                     state='disabled',
+                                     command=self.check_expression)
 
-        self.ent3 = Entry(self.left_frame,
-                          width=25,
-                          state='disabled',
-                          textvariable=self.tzdata)
+        self.ent3 = ttk.Entry(self.left_frame,
+                              width=25,
+                              state='disabled',
+                              textvariable=self.tzdata)
 
-        self.rbtn4 = Radiobutton(self.left_frame,
-                                 text="registrationInfo.xml",
-                                 justify=LEFT,
-                                 variable=self.tz,
-                                 value="-r",
-                                 state='disabled',
-                                 command=self.check_expression)
+        self.rbtn4 = ttk.Radiobutton(self.left_frame,
+                                     text="registrationInfo.xml",
+                                     variable=self.tz,
+                                     value="-r",
+                                     state='disabled',
+                                     command=self.check_expression)
 
-        self.lbl4 = Label(self.left_frame,
-                          text="Logging")
+        self.lbl4 = ttk.Label(self.left_frame,
+                              text="Logging")
 
-        self.cbx5 = Checkbutton(self.left_frame,
-                                text="Enabled",
-                                offvalue="",
-                                onvalue="-l",
-                                var=self.logging,
-                                command=self.check_expression)
+        self.cbx5 = ttk.Checkbutton(self.left_frame,
+                                    text="Enabled",
+                                    offvalue="",
+                                    onvalue="-l",
+                                    var=self.logging,
+                                    command=self.check_expression)
 
-        self.cbx6 = Checkbutton(self.left_frame,
-                                text="Verbose",
-                                offvalue="",
-                                onvalue="-v",
-                                var=self.verbose,
-                                command=self.check_expression)
+        self.cbx6 = ttk.Checkbutton(self.left_frame,
+                                    text="Verbose",
+                                    offvalue="",
+                                    onvalue="-v",
+                                    var=self.verbose,
+                                    command=self.check_expression)
 
-        self.lbl5 = Label(self.left_frame,
-                          text="VBN Options")
+        self.lbl5 = ttk.Label(self.left_frame,
+                              text="VBN Options")
 
-        self.cbx7 = Checkbutton(self.left_frame,
-                                text="Extract",
-                                offvalue="",
-                                onvalue="-e",
-                                var=self.e,
-                                command=self.check_expression)
+        self.cbx7 = ttk.Checkbutton(self.left_frame,
+                                    text="Extract",
+                                    offvalue="",
+                                    onvalue="-e",
+                                    var=self.e,
+                                    command=self.check_expression)
 
-        self.cbx8 = Checkbutton(self.left_frame,
-                                text="Quarantine Dump",
-                                offvalue="",
-                                onvalue="-qd",
-                                var=self.qd,
-                                command=self.check_expression)
+        self.cbx8 = ttk.Checkbutton(self.left_frame,
+                                    text="Quarantine Dump",
+                                    offvalue="",
+                                    onvalue="-qd",
+                                    var=self.qd,
+                                    command=self.check_expression)
 
-        self.cbx9 = Checkbutton(self.left_frame,
-                                text="Hex Dump",
-                                offvalue="",
-                                onvalue="-hd",
-                                var=self.hd,
-                                command=self.check_expression)
+        self.cbx9 = ttk.Checkbutton(self.left_frame,
+                                    text="Hex Dump",
+                                    offvalue="",
+                                    onvalue="-hd",
+                                    var=self.hd,
+                                    command=self.check_expression)
 
-        self.cbx10 = Checkbutton(self.left_frame,
-                                 text="Hash File",
-                                 offvalue="",
-                                 onvalue="-hf",
-                                 var=self.hf,
-                                 command=self.check_expression)
+        self.cbx10 = ttk.Checkbutton(self.left_frame,
+                                     text="Hash File",
+                                     offvalue="",
+                                     onvalue="-hf",
+                                     var=self.hf,
+                                     command=self.check_expression)
 
-        self.lbl6 = Label(self.left_frame,
-                          text="ccSubSDK",)
+        self.lbl6 = ttk.Label(self.left_frame,
+                              text="ccSubSDK",)
 
-        self.cbx11 = Checkbutton(self.left_frame,
-                                 text="Extract Blob",
-                                 offvalue="",
-                                 onvalue="-eb",
-                                 var=self.eb,
-                                 command=self.check_expression)
+        self.cbx11 = ttk.Checkbutton(self.left_frame,
+                                     text="Extract Blob",
+                                     offvalue="",
+                                     onvalue="-eb",
+                                     var=self.eb,
+                                     command=self.check_expression)
 
-        self.scrollb = Scrollbar(self.right_frame)
+        self.scrollb = ttk.Scrollbar(self.right_frame)
 
-        self.outputtext2 = Text(self.right_frame,
-                                yscrollcommand=self.scrollb.set,
-                                state='disabled')
+        self.outputtext2 = tk.Text(self.right_frame,
+                                   yscrollcommand=self.scrollb.set,
+                                   state='disabled')
 
         self.scrollb.config(command=self.outputtext2.yview)
 
-        self.lbl7 = Label(self.bottom_frame,
-                          text="Current command line")
-
-        self.outputtext = Text(self.bottom_frame, height=2)
+        self.outputtext = tk.Text(self.bottom_frame, height=2)
         self.check_expression()
 
-        self.var = IntVar()
+        self.var = tk.IntVar()
 
-        self.button = Button(self.bottom_frame,
-                             text="Click Me",
-                             command=lambda: Post_process(root, self.outpath.get()))
+        self.button = ttk.Button(self.bottom_frame,
+                                 text="Click Me",
+                                 width=8,
+                                 command=lambda: Post_process(root, self.outpath.get()))
 
-        self.button2 = Button(self.bottom_frame,
-                              text="run",
-                              command=lambda: threading.Thread(target=self.execute).start())
+        self.button2 = ttk.Button(self.bottom_frame,
+                                  text="run",
+                                  width=3,
+                                  command=lambda: threading.Thread(target=self.execute).start())
+
+        self.sg = ttk.Sizegrip(self.root)
 
         # layout the widgets in the main frame
         self.lbl1.grid(row=0, column=0, columnspan=5, sticky="w")
-        self.lbl2.grid(row=0, column=5, columnspan=4, sticky="w")
+        self.lbl2.grid(row=0, column=5, columnspan=4, sticky="w", padx=5)
         self.rbtn1.grid(row=1, column=0)
-        self.rbtn2.grid(row=1, column=1)
-        self.ent1.grid(row=1, column=2)
-        self.btn1.grid(row=1, column=3)
-        self.cbx1.grid(row=1, column=4)
-        self.cbx2.grid(row=1, column=5)
-        self.ent2.grid(row=1, column=6)
-        self.btn2.grid(row=1, column=7)
+        self.rbtn2.grid(row=1, column=1, padx=5)
+        self.ent1.grid(row=1, column=2, padx=5)
+        self.btn1.grid(row=1, column=3, padx=5)
+        self.cbx1.grid(row=1, column=4, padx=5)
+        self.cbx2.grid(row=1, column=5, padx=5)
+        self.ent2.grid(row=1, column=6, padx=5)
+        self.btn2.grid(row=1, column=7, padx=5)
         self.cbx3.grid(row=1, column=8)
         self.lbl3.grid(row=0, column=0, sticky="w")
         self.cbx4.grid(row=0, column=1, sticky="w")
@@ -376,14 +387,14 @@ class Pre_process:
         self.cbx11.grid(row=9, column=0, sticky="w")
         self.outputtext2.grid(row=0, column=0, columnspan=6, rowspan=10, sticky="nsew")
         self.scrollb.grid(row=0, column=6, rowspan=10, sticky="nsew")
-        self.lbl7.grid(row=0, column=0, sticky="w")
-        self.outputtext.grid(row=1, column=0)
-        self.button.grid(row=2)
-        self.button2.grid(row=3)
+        self.outputtext.grid(row=0, column=0, sticky="nsew")
+        self.button.grid(row=1, sticky="w")
+        self.button2.grid(row=2, sticky="w")
+        self.sg.grid(row=2, sticky='se')
 
     def check_expression(self, *args):
         # Your code that checks the expression
-        self.outputtext.config(state=NORMAL)
+        self.outputtext.config(state=tk.NORMAL)
         varContent = self.v.get()  # get what's written in the inputentry entry widget
         pathContent = self.path.get()
         # Optional arguments
@@ -396,10 +407,6 @@ class Pre_process:
             opt += f' {self.kapemode.get()}'
         if len(self.append.get()) > 1:
             opt += f' {self.append.get()}'
-        if len(self.tz.get()) > 1:
-            opt += f' {self.tz.get()}'
-        if len(self.tzdata.get()) > 1:
-            opt += f' {self.tzdata.get()}'
         if len(self.logging.get()) > 1:
             opt += f' {self.logging.get()}'
         if len(self.verbose.get()) > 1:
@@ -414,9 +421,13 @@ class Pre_process:
             opt += f' {self.hf.get()}'
         if len(self.eb.get()) > 1:
             opt += f' {self.eb.get()}'
-        self.outputtext.delete(1.0, END)  # clear the outputtext text widget
-        self.outputtext.insert(END, f'{varContent} "{pathContent}"{opt}')
-        self.outputtext.config(state=DISABLED)
+        if len(self.tz.get()) > 1:
+            opt += f' {self.tz.get()}'
+        if len(self.tzdata.get()) > 0:
+            opt += f' {self.tzdata.get()}'
+        self.outputtext.delete(1.0, tk.END)  # clear the outputtext text widget
+        self.outputtext.insert(tk.END, f'{varContent} "{pathContent}"{opt}')
+        self.outputtext.config(state=tk.DISABLED)
         self.cmd.set(f'{varContent} "{pathContent}"{opt}')
 
     def callback(self):
@@ -460,28 +471,69 @@ class Pre_process:
         self.check_expression()
 
     def execute(self):
-        self.outputtext2.config(state=NORMAL)
-        self.outputtext2.delete('1.0', END)
-        cmdlist = "py.exe -3 -u SEPparser2.py " + self.cmd.get()
+        for widgets in self.top_frame.winfo_children():
+            widgets.configure(state='disable')
+        for widgets in self.left_frame.winfo_children():
+            widgets.configure(state='disable')
+        for widgets in self.bottom_frame.winfo_children():
+            widgets.configure(state='disable')
+        self.outputtext2.config(state=tk.NORMAL)
+        self.outputtext2.delete('1.0', tk.END)
+        cmdlist = "py.exe -3 -u SEPparser.py " + self.cmd.get()
         proc = subprocess.Popen(cmdlist, stdout=subprocess.PIPE)
         while True:
             line = proc.stdout.readline()
             print(line)
             if not line:
                 break
-            self.outputtext2.insert(END, line)
-            self.outputtext2.see(END)
+            self.outputtext2.insert(tk.END, line)
+            self.outputtext2.see(tk.END)
             self.outputtext2.update_idletasks()
-        self.outputtext2.config(state=DISABLED)
+        self.outputtext2.config(state=tk.DISABLED)
+        for widgets in self.top_frame.winfo_children():
+            widgets.configure(state='normal')
+        for widgets in self.left_frame.winfo_children():
+            widgets.configure(state='normal')
+        for widgets in self.bottom_frame.winfo_children():
+            widgets.configure(state='normal')
+
+    def on_enter(self, e):
+        e.widget['selectcolor'] = 'grey'
+
+    def on_leave(self, e):
+        e.widget['selectcolor'] = 'white'
+
 
 def main():
-    root = Tk()
+    def menu_theme():
+        print('yes')
+        s = ttk.Style()
+        bg = s.lookup('TFrame', 'background')
+        fg = s.lookup('TFrame', 'foreground')
+        print(bg, fg)
+        menubar.config(background=bg)
+        tool_menu.config(bg=bg)
+
+    root = ThemedTk()
     root.title('SEPparser GUI')
-    root.geometry('{}x{}'.format(745, 400))
+#    root.geometry('{}x{}'.format(745, 400))
 
     # layout all of the main containers
     root.grid_rowconfigure(1, weight=1)
     root.grid_columnconfigure(0, weight=1)
+
+    menubar = tk.Menu(root)
+    root.config(menu=menubar)
+
+    tool_menu = tk.Menu(menubar, tearoff=0)
+
+    submenu = tk.Menu(tool_menu, tearoff=0)
+
+    for theme_name in sorted(root.get_themes()):
+        submenu.add_command(label=theme_name, command=lambda t = theme_name:root.set_theme(t))
+
+    tool_menu.add_cascade(label="Skins", menu=submenu)
+    menubar.add_cascade(label="Tools", menu=tool_menu)
 
     # create all of the main containers
     Pre_process(root)
