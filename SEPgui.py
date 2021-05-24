@@ -3,6 +3,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog
 from ttkthemes import ThemedTk
+import tkinter.font as tkFont
 import subprocess
 import threading
 import pandas as pd
@@ -14,11 +15,14 @@ class ViewLogs:
         self.outpath = outpath
         for widgets in self.btm_right.winfo_children():
             widgets.destroy()
-        self.btm_right.grid_columnconfigure(0, weight=1)
-        self.btm_right.grid_rowconfigure(0, weight=1)
+        self.btm_right.grid_columnconfigure(0, weight=0)
+        self.btm_right.grid_rowconfigure(0, weight=0)
         self.frame = ttk.Frame(self.btm_right)
 
         self.label1 = ttk.Label(self.btm_right, text="Network and Host Exploit Mitigation")
+        font = (tkFont.Font(self.label1['font'])).actual()
+        font['weight'] = 'bold'
+        self.label1.config(font=font)
         self.label2 = ttk.Label(self.btm_right, text="Protects against Web, network trhreats, and zero-day exploits")
         self.menua = ttk.Menubutton(self.btm_right, text="View Logs")
         self.menua.menu = tk.Menu(self.menua, tearoff=0)
@@ -27,6 +31,9 @@ class ViewLogs:
         self.menua.menu.add_command(label="Packet Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Packet_Log.csv', 0))
 
         self.label3 = ttk.Label(self.btm_right, text="Client Management")
+        font = (tkFont.Font(self.label3['font'])).actual()
+        font['weight'] = 'bold'
+        self.label3.config(font=font)
         self.label4 = ttk.Label(self.btm_right, text="Provides functionality to manage this client")
         self.menub = ttk.Menubutton(self.btm_right, text="View Logs")
         self.menub.menu = tk.Menu(self.menub, tearoff=0)
@@ -36,12 +43,12 @@ class ViewLogs:
         self.menub.menu.add_command(label="System Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_System_Log.csv', 0))
         self.menub.menu.add_command(label="Tamper Protect Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Tamper_Protect_Log.csv', 0))
 
-        self.label1.grid(row=1, column=0, sticky="ew")
-        self.menua.grid(row=1, column=1, sticky="ew")
-        self.label2.grid(row=2, column=0, sticky="ew")
-        self.label3.grid(row=3, column=0, sticky="ew")
-        self.menub.grid(row=3, column=1, sticky="ew")
-        self.label4.grid(row=4, column=0, sticky="ew")
+        self.label1.grid(row=0, column=0, sticky="ew")
+        self.menua.grid(row=0, column=1, sticky="ew")
+        self.label2.grid(row=1, column=0, sticky="ew")
+        self.label3.grid(row=2, column=0, sticky="ew")
+        self.menub.grid(row=2, column=1, sticky="ew")
+        self.label4.grid(row=3, column=0, sticky="ew")
 
 
 class Status:
@@ -49,17 +56,17 @@ class Status:
         self.btm_right = btm_right
         for widgets in self.btm_right.winfo_children():
             widgets.destroy()
-        self.btm_right.grid_columnconfigure(0, weight=1)
-        self.btm_right.grid_rowconfigure(0, weight=1)
-        self.frame = tk.Frame(self.btm_right)
+        self.btm_right.grid_columnconfigure(0, weight=0)
+        self.btm_right.grid_rowconfigure(0, weight=0)
+        self.frame = ttk.Frame(self.btm_right)
 
         self.btn = tk.Button(self.btm_right, text="Test1", command=lambda: readcsv(self.btm_right, 'Symantec_Timeline.csv', 0))
         self.btn2 = tk.Button(self.btm_right, text="Test2", command=lambda: readcsv(self.btm_right, 'settings.csv', 0))
         self.btn3 = tk.Button(self.btm_right, text="Test3", command=lambda: readcsv(self.btm_right, 'settings.csv', 0))
 
-        self.btn.grid(row=1, column=0, sticky="ew")
-        self.btn2.grid(row=2, column=0, sticky="ew")
-        self.btn3.grid(row=3, column=0, sticky="ew")
+        self.btn.grid(row=0, column=0, sticky="ew")
+        self.btn2.grid(row=1, column=0, sticky="ew")
+        self.btn3.grid(row=2, column=0, sticky="ew")
 
 
 class readcsv:
@@ -79,7 +86,8 @@ class readcsv:
 
         self.sheet = Sheet(self.frame,
                            data=pd.read_csv(log, keep_default_na=False, dtype=str, header=0).values.tolist(),
-                           headers=pd.read_csv(log, keep_default_na=False, dtype=str, header=0).columns.tolist())
+                           headers=pd.read_csv(log, keep_default_na=False, dtype=str, header=0).columns.tolist(),
+                           header_font=("Calibri", 11, "bold"))
 
         self.sheet.enable_bindings()
         self.frame.grid(row=0, column=0, sticky="nswe")
@@ -120,15 +128,15 @@ class Post_process:
         self.top_frame = ttk.Frame(self.root, width=450, height=50, padding=3)
         self.btm_frame = ttk.Frame(self.root)
         self.top_frame.grid(row=0, sticky="ew")
-        self.btm_frame.grid(row=1, sticky="nsew")
+        self.btm_frame.grid(row=1, rowspan=1, sticky="nsew")
         # create the bottom frame widgets
         self.btm_frame.grid_rowconfigure(0, weight=1)
         self.btm_frame.grid_columnconfigure(1, weight=1)
 
         self.btn = ttk.Button(self.top_frame, text="Help", command=lambda: ViewLogs(self.btm_right))
 
-        self.btm_left = ttk.Frame(self.btm_frame, width=100, height=300)
-        self.btm_right = ttk.Frame(self.btm_frame, width=350, height=300)
+        self.btm_left = ttk.Frame(self.btm_frame, width=100, height=300, padding=10)
+        self.btm_right = ttk.Frame(self.btm_frame, width=350, height=300, padding=10)
 
         self.btm_left.grid(row=0, column=0, sticky="ns")
         self.btm_right.grid(row=0, column=1, sticky="nsew")
@@ -140,11 +148,11 @@ class Post_process:
         self.btn5 = ttk.Button(self.btm_left, text="View Logs", command=lambda: ViewLogs(self.btm_right, self.outpath))
 
         self.btn.grid(row=0, column=2, sticky="e")
-        self.btn1.grid(row=0, column=0, sticky="ew")
-        self.btn2.grid(row=1, column=0, sticky="ew")
-        self.btn3.grid(row=2, column=0, sticky="ew")
-        self.btn4.grid(row=3, column=0, sticky="ew")
-        self.btn5.grid(row=4, column=0, sticky="ew")
+        self.btn1.grid(row=0, column=0, sticky="ew", pady=1)
+        self.btn2.grid(row=1, column=0, sticky="ew", pady=1)
+        self.btn3.grid(row=2, column=0, sticky="ew", pady=1)
+        self.btn4.grid(row=3, column=0, sticky="ew", pady=1)
+        self.btn5.grid(row=4, column=0, sticky="ew", pady=1)
 
 
 class Pre_process:
@@ -426,7 +434,7 @@ class Pre_process:
         if len(self.tzdata.get()) > 0:
             opt += f' {self.tzdata.get()}'
         self.outputtext.delete(1.0, tk.END)  # clear the outputtext text widget
-        self.outputtext.insert(tk.END, f'{varContent} "{pathContent}"{opt}')
+        self.outputtext.insert(tk.END, (f'{varContent} "{pathContent}"{opt}').replace('/', '\\'))
         self.outputtext.config(state=tk.DISABLED)
         self.cmd.set(f'{varContent} "{pathContent}"{opt}')
 
@@ -516,7 +524,7 @@ def main():
 
     root = ThemedTk()
     root.title('SEPparser GUI')
-#    root.geometry('{}x{}'.format(745, 400))
+    root.minsize(745, 400)
 
     # layout all of the main containers
     root.grid_rowconfigure(1, weight=1)
