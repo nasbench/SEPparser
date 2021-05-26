@@ -1,3 +1,5 @@
+import os
+import re
 from tksheet import Sheet
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -19,29 +21,42 @@ class ViewLogs:
         self.btm_right.grid_rowconfigure(0, weight=0)
         self.frame = ttk.Frame(self.btm_right)
 
-        self.label1 = ttk.Label(self.btm_right, text="Network and Host Exploit Mitigation")
+        self.label1 = ttk.Label(self.btm_right, text="ccSubSDK Database")
         font = (tkFont.Font(self.label1['font'])).actual()
         font['weight'] = 'bold'
         self.label1.config(font=font)
-        self.label2 = ttk.Label(self.btm_right, text="Protects against Web, network trhreats, and zero-day exploits")
+        self.label2 = ttk.Label(self.btm_right, text="The detection information that clients send includes information about antivirus \ndetections, intrusion prevention, SONAR, and file reputation detections")
         self.menua = ttk.Menubutton(self.btm_right, text="View Logs")
         self.menua.menu = tk.Menu(self.menua, tearoff=0)
         self.menua["menu"] = self.menua.menu
-        self.menua.menu.add_command(label="Traffic Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Traffic_Log.csv', 0))
-        self.menua.menu.add_command(label="Packet Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Packet_Log.csv', 0))
-
-        self.label3 = ttk.Label(self.btm_right, text="Client Management")
+        for f in os.listdir(self.outpath + '\ccSubSDK'):
+            if "csv" in f:
+                self.menua.menu.add_command(label=f, command=lambda f = f:readcsv(self.btm_right, self.outpath + '\ccSubSDK\\' + f, 0))
+        
+        self.label3 = ttk.Label(self.btm_right, text="Network and Host Exploit Mitigation")
         font = (tkFont.Font(self.label3['font'])).actual()
         font['weight'] = 'bold'
         self.label3.config(font=font)
-        self.label4 = ttk.Label(self.btm_right, text="Provides functionality to manage this client")
+        self.label4 = ttk.Label(self.btm_right, text="Protects against Web, network trhreats, and zero-day exploits")
         self.menub = ttk.Menubutton(self.btm_right, text="View Logs")
         self.menub.menu = tk.Menu(self.menub, tearoff=0)
         self.menub["menu"] = self.menub.menu
-        self.menub.menu.add_command(label="Control Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Control_Log.csv', 0))
-        self.menub.menu.add_command(label="Security Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Security_Log.csv', 0))
-        self.menub.menu.add_command(label="System Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_System_Log.csv', 0))
-        self.menub.menu.add_command(label="Tamper Protect Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Tamper_Protect_Log.csv', 0))
+        self.menub.menu.add_command(label="Traffic Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Traffic_Log.csv', 0))
+        self.menub.menu.add_command(label="Packet Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Packet_Log.csv', 0))
+        self.menub.menu.add_command(label="View Packets", command=lambda: None)
+
+        self.label5 = ttk.Label(self.btm_right, text="Client Management")
+        font = (tkFont.Font(self.label5['font'])).actual()
+        font['weight'] = 'bold'
+        self.label5.config(font=font)
+        self.label6 = ttk.Label(self.btm_right, text="Provides functionality to manage this client")
+        self.menuc = ttk.Menubutton(self.btm_right, text="View Logs")
+        self.menuc.menu = tk.Menu(self.menuc, tearoff=0)
+        self.menuc["menu"] = self.menuc.menu
+        self.menuc.menu.add_command(label="Control Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Control_Log.csv', 0))
+        self.menuc.menu.add_command(label="Security Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Security_Log.csv', 0))
+        self.menuc.menu.add_command(label="System Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_System_Log.csv', 0))
+        self.menuc.menu.add_command(label="Tamper Protection Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Tamper_Protect_Log.csv', 0))
 
         self.label1.grid(row=0, column=0, sticky="ew")
         self.menua.grid(row=0, column=1, sticky="ew")
@@ -49,24 +64,9 @@ class ViewLogs:
         self.label3.grid(row=2, column=0, sticky="ew")
         self.menub.grid(row=2, column=1, sticky="ew")
         self.label4.grid(row=3, column=0, sticky="ew")
-
-
-class Status:
-    def __init__(self, btm_right):
-        self.btm_right = btm_right
-        for widgets in self.btm_right.winfo_children():
-            widgets.destroy()
-        self.btm_right.grid_columnconfigure(0, weight=0)
-        self.btm_right.grid_rowconfigure(0, weight=0)
-        self.frame = ttk.Frame(self.btm_right)
-
-        self.btn = tk.Button(self.btm_right, text="Test1", command=lambda: readcsv(self.btm_right, 'Symantec_Timeline.csv', 0))
-        self.btn2 = tk.Button(self.btm_right, text="Test2", command=lambda: readcsv(self.btm_right, 'settings.csv', 0))
-        self.btn3 = tk.Button(self.btm_right, text="Test3", command=lambda: readcsv(self.btm_right, 'settings.csv', 0))
-
-        self.btn.grid(row=0, column=0, sticky="ew")
-        self.btn2.grid(row=1, column=0, sticky="ew")
-        self.btn3.grid(row=2, column=0, sticky="ew")
+        self.label5.grid(row=4, column=0, sticky="ew")
+        self.menuc.grid(row=4, column=1, sticky="ew")
+        self.label6.grid(row=5, column=0, sticky="ew")
 
 
 class readcsv:
@@ -83,10 +83,11 @@ class readcsv:
         self.frame = ttk.Frame(self.master)
         self.frame.grid_columnconfigure(0, weight=1)
         self.frame.grid_rowconfigure(0, weight=1)
+        self.sg = ttk.Sizegrip(self.frame)
 
         self.sheet = Sheet(self.frame,
-                           data=pd.read_csv(log, keep_default_na=False, dtype=str, header=0).values.tolist(),
-                           headers=pd.read_csv(log, keep_default_na=False, dtype=str, header=0).columns.tolist(),
+                           data=pd.read_csv(log, keep_default_na=False, dtype=str, header=0, encoding ='latin1').values.tolist(),
+                           headers=pd.read_csv(log, keep_default_na=False, dtype=str, header=0, encoding ='latin1').columns.tolist(),
                            header_font=("Calibri", 11, "bold"))
 
         self.sheet.enable_bindings()
@@ -113,7 +114,9 @@ class readcsv:
                                      "rc_insert_row",
                                      "rc_delete_row"))
         self.frame.grid(row=0, column=0, sticky="nswe")
-        self.sheet.grid(row=0, column=0, sticky="nswe")
+        self.sheet.grid(row=0, column=0, sticky="nswe", padx=(15,0))
+        if tl == 0:
+            self.sg.grid(row=1, column=1, sticky='se')
 
 
 class Post_process:
@@ -141,18 +144,16 @@ class Post_process:
         self.btm_left.grid(row=0, column=0, sticky="ns")
         self.btm_right.grid(row=0, column=1, sticky="nsew")
 
-        self.btn1 = ttk.Button(self.btm_left, text="Status", command=lambda: Status(self.btm_right))
-        self.btn2 = ttk.Button(self.btm_left, text="Scan for Threats", command=lambda: None)
-        self.btn3 = ttk.Button(self.btm_left, text="View Settings", command=lambda: readcsv(self.btm_right, self.outpath + '\settings.csv', 1))
-        self.btn4 = ttk.Button(self.btm_left, text="View Quarantine", command=lambda: readcsv(self.btm_right, self.outpath + '\quarantine.csv', 1))
-        self.btn5 = ttk.Button(self.btm_left, text="View Logs", command=lambda: ViewLogs(self.btm_right, self.outpath))
+        self.btn1 = ttk.Button(self.btm_left, text="Timeline", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Timeline.csv', 1))
+        self.btn2 = ttk.Button(self.btm_left, text="View Settings", command=lambda: readcsv(self.btm_right, self.outpath + '\settings.csv', 1))
+        self.btn3 = ttk.Button(self.btm_left, text="View Quarantine", command=lambda: readcsv(self.btm_right, self.outpath + '\quarantine.csv', 1))
+        self.btn4 = ttk.Button(self.btm_left, text="View Logs", command=lambda: ViewLogs(self.btm_right, self.outpath))
 
         self.btn.grid(row=0, column=2, sticky="e")
         self.btn1.grid(row=0, column=0, sticky="ew", pady=1)
         self.btn2.grid(row=1, column=0, sticky="ew", pady=1)
         self.btn3.grid(row=2, column=0, sticky="ew", pady=1)
         self.btn4.grid(row=3, column=0, sticky="ew", pady=1)
-        self.btn5.grid(row=4, column=0, sticky="ew", pady=1)
 
 
 class Pre_process:
@@ -160,21 +161,27 @@ class Pre_process:
         self.root = root
 
         # create all of the main containers
-        self.top_frame = ttk.Frame(self.root, padding=10)
+        self.top_frame = ttk.Frame(self.root, padding=15)
         self.center_frame = ttk.Frame(self.root, padding=10)
-        self.left_frame = ttk.Frame(self.center_frame)
-        self.right_frame = ttk.Frame(self.center_frame)
-        self.bottom_frame = ttk.LabelFrame(self.root, text="Current command line", padding=10)
+        self.cleft_frame = ttk.Frame(self.center_frame, padding=5)
+        self.cright_frame = ttk.LabelFrame(self.center_frame, text="SEPparser Output", padding=10)
+        self.bottom_frame = ttk.Frame(self.root, padding=15)
+        self.inner_frame = ttk.LabelFrame(self.bottom_frame, text="Current command line")
         self.top_frame.grid(row=0, column=0, sticky="ew")
         self.center_frame.grid(row=1, column=0, sticky="nsew")
-        self.left_frame.grid(row=0, column=0, sticky="ns")
-        self.right_frame.grid(row=0, column=1, sticky="nsew")
+        self.cleft_frame.grid(row=0, column=0, sticky="ns")
+        self.cright_frame.grid(row=0, column=1, sticky="nsew")
         self.bottom_frame.grid(row=2, column=0, sticky="ew")
+        self.inner_frame.grid(row=0, column=0, sticky="ew")
 
         self.center_frame.grid_rowconfigure(0, weight=1)
         self.center_frame.grid_columnconfigure(1, weight=1)
-        self.right_frame.grid_rowconfigure(0, weight=1)
-        self.right_frame.grid_columnconfigure(0, weight=1)
+        self.cright_frame.grid_rowconfigure(0, weight=1)
+        self.cright_frame.grid_columnconfigure(0, weight=1)
+        self.bottom_frame.grid_rowconfigure(0, weight=1)
+        self.bottom_frame.grid_columnconfigure(0, weight=1)
+        self.inner_frame.grid_rowconfigure(0, weight=1)
+        self.inner_frame.grid_columnconfigure(0, weight=1)
 
         self.v = tk.StringVar(value="-d")
         self.kapemode = tk.StringVar(value="")
@@ -212,9 +219,9 @@ class Pre_process:
                                      value="-f",
                                      command=self.check_expression)
 
-        self.ent1 = ttk.Entry(self.top_frame,
-                              width=25,
-                              textvariable=self.path)
+        self.ent1 = ttk.Combobox(self.top_frame,
+                                 width=25,
+                                 textvariable=self.path)
 
         self.btn1 = ttk.Button(self.top_frame,
                                text='...',
@@ -238,10 +245,10 @@ class Pre_process:
                                     var=self.output,
                                     command=lambda:[self.check_expression(), self.outcheck()])
 
-        self.ent2 = ttk.Entry(self.top_frame,
-                              width=25,
-                              textvariable=self.outpath,
-                              state='disabled')
+        self.ent2 = ttk.Combobox(self.top_frame,
+                                 width=25,
+                                 textvariable=self.outpath,
+                                 state='disabled')
 
         self.btn2 = ttk.Button(self.top_frame,
                                text='...',
@@ -256,112 +263,124 @@ class Pre_process:
                                     var=self.append,
                                     command=self.check_expression)
 
-        self.lbl3 = ttk.Label(self.left_frame,
+        self.lbl3 = ttk.Label(self.cleft_frame,
                               text="Time Zone")
 
-        self.cbx4 = ttk.Checkbutton(self.left_frame,
+        self.cbx4 = ttk.Checkbutton(self.cleft_frame,
                                     offvalue=0,
                                     onvalue=1,
                                     var=self.tvalue,
                                     command=self.tcheck)
 
-        self.rbtn3 = ttk.Radiobutton(self.left_frame,
+        self.rbtn3 = ttk.Radiobutton(self.cleft_frame,
+                                     text="Offset",
                                      variable=self.tz,
                                      value="-tz",
                                      state='disabled',
                                      command=self.check_expression)
 
-        self.ent3 = ttk.Entry(self.left_frame,
+        self.ent3 = ttk.Entry(self.cleft_frame,
                               width=25,
                               state='disabled',
                               textvariable=self.tzdata)
 
-        self.rbtn4 = ttk.Radiobutton(self.left_frame,
+        self.rbtn4 = ttk.Radiobutton(self.cleft_frame,
                                      text="registrationInfo.xml",
                                      variable=self.tz,
                                      value="-r",
                                      state='disabled',
                                      command=self.check_expression)
 
-        self.lbl4 = ttk.Label(self.left_frame,
+        self.lbl4 = ttk.Label(self.cleft_frame,
                               text="Logging")
 
-        self.cbx5 = ttk.Checkbutton(self.left_frame,
+        self.cbx5 = ttk.Checkbutton(self.cleft_frame,
                                     text="Enabled",
                                     offvalue="",
                                     onvalue="-l",
                                     var=self.logging,
                                     command=self.check_expression)
 
-        self.cbx6 = ttk.Checkbutton(self.left_frame,
+        self.cbx6 = ttk.Checkbutton(self.cleft_frame,
                                     text="Verbose",
                                     offvalue="",
                                     onvalue="-v",
                                     var=self.verbose,
                                     command=self.check_expression)
 
-        self.lbl5 = ttk.Label(self.left_frame,
+        self.lbl5 = ttk.Label(self.cleft_frame,
                               text="VBN Options")
 
-        self.cbx7 = ttk.Checkbutton(self.left_frame,
+        self.cbx7 = ttk.Checkbutton(self.cleft_frame,
                                     text="Extract",
                                     offvalue="",
                                     onvalue="-e",
                                     var=self.e,
                                     command=self.check_expression)
 
-        self.cbx8 = ttk.Checkbutton(self.left_frame,
+        self.cbx8 = ttk.Checkbutton(self.cleft_frame,
                                     text="Quarantine Dump",
                                     offvalue="",
                                     onvalue="-qd",
                                     var=self.qd,
                                     command=self.check_expression)
 
-        self.cbx9 = ttk.Checkbutton(self.left_frame,
+        self.cbx9 = ttk.Checkbutton(self.cleft_frame,
                                     text="Hex Dump",
                                     offvalue="",
                                     onvalue="-hd",
                                     var=self.hd,
                                     command=self.check_expression)
 
-        self.cbx10 = ttk.Checkbutton(self.left_frame,
+        self.cbx10 = ttk.Checkbutton(self.cleft_frame,
                                      text="Hash File",
                                      offvalue="",
                                      onvalue="-hf",
                                      var=self.hf,
                                      command=self.check_expression)
 
-        self.lbl6 = ttk.Label(self.left_frame,
+        self.lbl6 = ttk.Label(self.cleft_frame,
                               text="ccSubSDK",)
 
-        self.cbx11 = ttk.Checkbutton(self.left_frame,
+        self.cbx11 = ttk.Checkbutton(self.cleft_frame,
                                      text="Extract Blob",
                                      offvalue="",
                                      onvalue="-eb",
                                      var=self.eb,
                                      command=self.check_expression)
 
-        self.scrollb = ttk.Scrollbar(self.right_frame)
+        self.scrollb = ttk.Scrollbar(self.cright_frame)
 
-        self.outputtext2 = tk.Text(self.right_frame,
+        self.outputtext2 = tk.Text(self.cright_frame,
+                                   bg='black',
+                                   fg='grey',
                                    yscrollcommand=self.scrollb.set,
                                    state='disabled')
+                                   
+        self.outputtext2.tag_configure(b'\x1b[1;93m', foreground="yellow")
+        self.outputtext2.tag_configure(b'\x1b[1;33m', foreground="yellow")
+        self.outputtext2.tag_configure(b'\x1b[1;92m', foreground="green")
+        self.outputtext2.tag_configure(b'\x1b[1;32m', foreground="green")
+        self.outputtext2.tag_configure(b'\x1b[1;35m', foreground="purple")
+        self.outputtext2.tag_configure(b'\x1b[1;31m', foreground="red")
+        self.outputtext2.tag_configure(b'\x1b[1;36m', foreground="cyan")
+#        self.outputtext2.tag_configure(b'\x1b[1;0m', background="blue")
 
         self.scrollb.config(command=self.outputtext2.yview)
 
-        self.outputtext = tk.Text(self.bottom_frame, height=2)
+        self.outputtext = tk.Text(self.inner_frame, height=2)
         self.check_expression()
 
         self.var = tk.IntVar()
 
-        self.button = ttk.Button(self.bottom_frame,
+        self.button = ttk.Button(self.inner_frame,
                                  text="Click Me",
                                  width=8,
                                  command=lambda: Post_process(root, self.outpath.get()))
 
-        self.button2 = ttk.Button(self.bottom_frame,
-                                  text="run",
-                                  width=3,
+        self.button2 = ttk.Button(self.inner_frame,
+                                  text="Execute",
+                                  width=7,
                                   command=lambda: threading.Thread(target=self.execute).start())
 
         self.sg = ttk.Sizegrip(self.root)
@@ -395,9 +414,9 @@ class Pre_process:
         self.cbx11.grid(row=9, column=0, sticky="w")
         self.outputtext2.grid(row=0, column=0, columnspan=6, rowspan=10, sticky="nsew")
         self.scrollb.grid(row=0, column=6, rowspan=10, sticky="nsew")
-        self.outputtext.grid(row=0, column=0, sticky="nsew")
-        self.button.grid(row=1, sticky="w")
-        self.button2.grid(row=2, sticky="w")
+        self.outputtext.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+        self.button.grid(row=1, sticky="w", padx=5)
+        self.button2.grid(row=1, sticky="e", padx=5)
         self.sg.grid(row=2, sticky='se')
 
     def check_expression(self, *args):
@@ -434,7 +453,7 @@ class Pre_process:
         if len(self.tzdata.get()) > 0:
             opt += f' {self.tzdata.get()}'
         self.outputtext.delete(1.0, tk.END)  # clear the outputtext text widget
-        self.outputtext.insert(tk.END, (f'{varContent} "{pathContent}"{opt}').replace('/', '\\'))
+        self.outputtext.insert(tk.END, (f'SEPparser.exe {varContent} "{pathContent}"{opt}').replace('/', '\\'))
         self.outputtext.config(state=tk.DISABLED)
         self.cmd.set(f'{varContent} "{pathContent}"{opt}')
 
@@ -481,28 +500,45 @@ class Pre_process:
     def execute(self):
         for widgets in self.top_frame.winfo_children():
             widgets.configure(state='disable')
-        for widgets in self.left_frame.winfo_children():
+        for widgets in self.cleft_frame.winfo_children():
             widgets.configure(state='disable')
-        for widgets in self.bottom_frame.winfo_children():
+        for widgets in self.inner_frame.winfo_children():
             widgets.configure(state='disable')
         self.outputtext2.config(state=tk.NORMAL)
         self.outputtext2.delete('1.0', tk.END)
         cmdlist = "py.exe -3 -u SEPparser.py " + self.cmd.get()
         proc = subprocess.Popen(cmdlist, stdout=subprocess.PIPE)
+        ansi_escape = re.compile(b'(\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~]))')
         while True:
-            line = proc.stdout.readline()
-            print(line)
+            line = ansi_escape.split(proc.stdout.readline())
+            line = [ x for x in line if b'' != x ]
+            s = len(line)
+            if s == 1:
+                self.outputtext2.insert(tk.END, "\r\n")
+                self.outputtext2.see(tk.END)
+                self.outputtext2.update_idletasks()
+                continue
+
+            if s%2 != 0:
+                s = s - 1
+
+            for i in range(0, s, 2):
+                tag = line[i]
+                w = line[i+1]
+
+                self.outputtext2.insert(tk.END, w, tag)
+                self.outputtext2.see(tk.END)
+                self.outputtext2.update_idletasks()
+
             if not line:
                 break
-            self.outputtext2.insert(tk.END, line)
-            self.outputtext2.see(tk.END)
-            self.outputtext2.update_idletasks()
+
         self.outputtext2.config(state=tk.DISABLED)
         for widgets in self.top_frame.winfo_children():
             widgets.configure(state='normal')
-        for widgets in self.left_frame.winfo_children():
+        for widgets in self.cleft_frame.winfo_children():
             widgets.configure(state='normal')
-        for widgets in self.bottom_frame.winfo_children():
+        for widgets in self.inner_frame.winfo_children():
             widgets.configure(state='normal')
 
     def on_enter(self, e):
