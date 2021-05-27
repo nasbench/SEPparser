@@ -15,58 +15,109 @@ class ViewLogs:
     def __init__(self, btm_right, outpath):
         self.btm_right = btm_right
         self.outpath = outpath
+
         for widgets in self.btm_right.winfo_children():
             widgets.destroy()
+
         self.btm_right.grid_columnconfigure(0, weight=0)
         self.btm_right.grid_rowconfigure(0, weight=0)
-        self.frame = ttk.Frame(self.btm_right)
+        self.top = ttk.Frame(self.btm_right, relief='groove', padding=10)
+        self.middle = ttk.Frame(self.btm_right, relief='groove', padding=10)
+        self.bottom = ttk.Frame(self.btm_right, relief='groove', padding=10)
 
-        self.label1 = ttk.Label(self.btm_right, text="ccSubSDK Database")
+        self.top.grid(row=0, column=0, sticky="ew")
+        self.middle.grid(row=1, column=0, sticky="ew")
+        self.bottom.grid(row=2, column=0, sticky="ew")
+
+        self.label1 = ttk.Label(self.top,
+                                text="ccSubSDK Database")
+
         font = (tkFont.Font(self.label1['font'])).actual()
         font['weight'] = 'bold'
         self.label1.config(font=font)
-        self.label2 = ttk.Label(self.btm_right, text="The detection information that clients send includes information about antivirus \ndetections, intrusion prevention, SONAR, and file reputation detections")
-        self.menua = ttk.Menubutton(self.btm_right, text="View Logs")
-        self.menua.menu = tk.Menu(self.menua, tearoff=0)
+
+        self.label2 = ttk.Label(self.top,
+                                text="The detection information that clients send includes information about antivirus \ndetections, intrusion prevention, SONAR, and file reputation detections")
+
+        self.menua = ttk.Menubutton(self.top,
+                                    text="View Logs")
+
+        self.menua.menu = tk.Menu(self.menua,
+                                  tearoff=0)
+
         self.menua["menu"] = self.menua.menu
+
         for f in os.listdir(self.outpath + '\ccSubSDK'):
             if "csv" in f:
-                self.menua.menu.add_command(label=f, command=lambda f = f:readcsv(self.btm_right, self.outpath + '\ccSubSDK\\' + f, 0))
-        
-        self.label3 = ttk.Label(self.btm_right, text="Network and Host Exploit Mitigation")
+                self.menua.menu.add_command(label=f,
+                                            command=lambda f=f: readcsv(self.btm_right, self.outpath + '\ccSubSDK\\' + f, 0))
+
+        self.label3 = ttk.Label(self.middle,
+                                text="Network and Host Exploit Mitigation")
+
         font = (tkFont.Font(self.label3['font'])).actual()
         font['weight'] = 'bold'
         self.label3.config(font=font)
-        self.label4 = ttk.Label(self.btm_right, text="Protects against Web, network trhreats, and zero-day exploits")
-        self.menub = ttk.Menubutton(self.btm_right, text="View Logs")
-        self.menub.menu = tk.Menu(self.menub, tearoff=0)
-        self.menub["menu"] = self.menub.menu
-        self.menub.menu.add_command(label="Traffic Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Traffic_Log.csv', 0))
-        self.menub.menu.add_command(label="Packet Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Packet_Log.csv', 0))
-        self.menub.menu.add_command(label="View Packets", command=lambda: None)
 
-        self.label5 = ttk.Label(self.btm_right, text="Client Management")
+        self.label4 = ttk.Label(self.middle,
+                                text="Protects against Web, network trhreats, and zero-day exploits")
+
+        self.menub = ttk.Menubutton(self.middle,
+                                    text="View Logs")
+
+        self.menub.menu = tk.Menu(self.menub,
+                                  tearoff=0)
+
+        self.menub["menu"] = self.menub.menu
+
+        self.menub.menu.add_command(label="Traffic Log",
+                                    command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Traffic_Log.csv', 0))
+
+        self.menub.menu.add_command(label="Packet Log",
+                                    command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Network_and_Host_Exploit_Mitigation_Packet_Log.csv', 0))
+
+        self.menub.menu.add_command(label="View Packets",
+                                    command=lambda: None)
+
+        self.label5 = ttk.Label(self.bottom,
+                                text="Client Management")
+
         font = (tkFont.Font(self.label5['font'])).actual()
         font['weight'] = 'bold'
         self.label5.config(font=font)
-        self.label6 = ttk.Label(self.btm_right, text="Provides functionality to manage this client")
-        self.menuc = ttk.Menubutton(self.btm_right, text="View Logs")
-        self.menuc.menu = tk.Menu(self.menuc, tearoff=0)
+
+        self.label6 = ttk.Label(self.bottom,
+                                text="Provides functionality to manage this client")
+
+        self.menuc = ttk.Menubutton(self.bottom,
+                                    text="View Logs")
+
+        self.menuc.menu = tk.Menu(self.menuc,
+                                  tearoff=0)
+
         self.menuc["menu"] = self.menuc.menu
-        self.menuc.menu.add_command(label="Control Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Control_Log.csv', 0))
-        self.menuc.menu.add_command(label="Security Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Security_Log.csv', 0))
-        self.menuc.menu.add_command(label="System Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_System_Log.csv', 0))
-        self.menuc.menu.add_command(label="Tamper Protection Log", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Tamper_Protect_Log.csv', 0))
+
+        self.menuc.menu.add_command(label="Control Log",
+                                    command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Control_Log.csv', 0))
+
+        self.menuc.menu.add_command(label="Security Log",
+                                    command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Security_Log.csv', 0))
+
+        self.menuc.menu.add_command(label="System Log",
+                                    command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_System_Log.csv', 0))
+
+        self.menuc.menu.add_command(label="Tamper Protection Log",
+                                    command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Client_Management_Tamper_Protect_Log.csv', 0))
 
         self.label1.grid(row=0, column=0, sticky="ew")
-        self.menua.grid(row=0, column=1, sticky="ew")
+        self.menua.grid(row=0, column=1, sticky="e", padx=(10, 0))
         self.label2.grid(row=1, column=0, sticky="ew")
-        self.label3.grid(row=2, column=0, sticky="ew")
-        self.menub.grid(row=2, column=1, sticky="ew")
-        self.label4.grid(row=3, column=0, sticky="ew")
-        self.label5.grid(row=4, column=0, sticky="ew")
-        self.menuc.grid(row=4, column=1, sticky="ew")
-        self.label6.grid(row=5, column=0, sticky="ew")
+        self.label3.grid(row=0, column=0, sticky="ew")
+        self.menub.grid(row=0, column=1, sticky="e", padx=(10, 0))
+        self.label4.grid(row=1, column=0, sticky="ew")
+        self.label5.grid(row=0, column=0, sticky="ew")
+        self.menuc.grid(row=0, column=1, sticky="e", padx=(10, 0))
+        self.label6.grid(row=1, column=0, sticky="ew")
 
 
 class readcsv:
@@ -77,6 +128,7 @@ class readcsv:
             self.master = master
             for widgets in self.master.winfo_children():
                 widgets.destroy()
+
         self.log = log
         self.master.grid_columnconfigure(0, weight=1)
         self.master.grid_rowconfigure(0, weight=1)
@@ -114,7 +166,7 @@ class readcsv:
                                      "rc_insert_row",
                                      "rc_delete_row"))
         self.frame.grid(row=0, column=0, sticky="nswe")
-        self.sheet.grid(row=0, column=0, sticky="nswe", padx=(15,0))
+        self.sheet.grid(row=0, column=0, sticky="nswe", padx=(15, 0))
         if tl == 0:
             self.sg.grid(row=1, column=1, sticky='se')
 
@@ -123,37 +175,55 @@ class Post_process:
     def __init__(self, root, outpath):
         self.root = root
         self.outpath = outpath
+
         for widgets in self.root.winfo_children():
-            if str(widgets) == ".!menu" or str(widgets) == ".!sizegrip":
+            if str(widgets) == ".!menu":
                 pass
             else:
                 widgets.destroy()
+
         self.top_frame = ttk.Frame(self.root, width=450, height=50, padding=3)
         self.btm_frame = ttk.Frame(self.root)
         self.top_frame.grid(row=0, sticky="ew")
         self.btm_frame.grid(row=1, rowspan=1, sticky="nsew")
+
         # create the bottom frame widgets
         self.btm_frame.grid_rowconfigure(0, weight=1)
         self.btm_frame.grid_columnconfigure(1, weight=1)
 
-        self.btn = ttk.Button(self.top_frame, text="Help", command=lambda: ViewLogs(self.btm_right))
+        self.btn = ttk.Button(self.top_frame, text="Help",
+                              command=lambda: ViewLogs(self.btm_right))
 
         self.btm_left = ttk.Frame(self.btm_frame, width=100, height=300, padding=10)
         self.btm_right = ttk.Frame(self.btm_frame, width=350, height=300, padding=10)
 
         self.btm_left.grid(row=0, column=0, sticky="ns")
-        self.btm_right.grid(row=0, column=1, sticky="nsew")
+        self.btm_right.grid(row=0, column=1, sticky="nsew", pady=(0, 10))
 
-        self.btn1 = ttk.Button(self.btm_left, text="Timeline", command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Timeline.csv', 1))
-        self.btn2 = ttk.Button(self.btm_left, text="View Settings", command=lambda: readcsv(self.btm_right, self.outpath + '\settings.csv', 1))
-        self.btn3 = ttk.Button(self.btm_left, text="View Quarantine", command=lambda: readcsv(self.btm_right, self.outpath + '\quarantine.csv', 1))
-        self.btn4 = ttk.Button(self.btm_left, text="View Logs", command=lambda: ViewLogs(self.btm_right, self.outpath))
+        self.btn1 = ttk.Button(self.btm_left,
+                               text="Timeline",
+                               command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Timeline.csv', 1))
+
+        self.btn2 = ttk.Button(self.btm_left,
+                               text="View Settings",
+                               command=lambda: readcsv(self.btm_right, self.outpath + '\settings.csv', 1))
+
+        self.btn3 = ttk.Button(self.btm_left,
+                               text="View Quarantine",
+                               command=lambda: readcsv(self.btm_right, self.outpath + '\quarantine.csv', 1))
+
+        self.btn4 = ttk.Button(self.btm_left,
+                               text="View Logs",
+                               command=lambda: ViewLogs(self.btm_right, self.outpath))
+
+        self.sg = ttk.Sizegrip(self.root)
 
         self.btn.grid(row=0, column=2, sticky="e")
         self.btn1.grid(row=0, column=0, sticky="ew", pady=1)
         self.btn2.grid(row=1, column=0, sticky="ew", pady=1)
         self.btn3.grid(row=2, column=0, sticky="ew", pady=1)
         self.btn4.grid(row=3, column=0, sticky="ew", pady=1)
+        self.sg.grid(row=1, sticky='se')
 
 
 class Pre_process:
@@ -163,16 +233,16 @@ class Pre_process:
         # create all of the main containers
         self.top_frame = ttk.Frame(self.root, padding=15)
         self.center_frame = ttk.Frame(self.root, padding=10)
-        self.cleft_frame = ttk.Frame(self.center_frame, padding=5)
-        self.cright_frame = ttk.LabelFrame(self.center_frame, text="SEPparser Output", padding=10)
-        self.bottom_frame = ttk.Frame(self.root, padding=15)
+        self.cleft_frame = ttk.LabelFrame(self.center_frame, text="Other Options", padding=5)
+        self.cright_frame = ttk.LabelFrame(self.center_frame, text="SEPparser Output", padding=5)
+        self.bottom_frame = ttk.Frame(self.root)
         self.inner_frame = ttk.LabelFrame(self.bottom_frame, text="Current command line")
         self.top_frame.grid(row=0, column=0, sticky="ew")
         self.center_frame.grid(row=1, column=0, sticky="nsew")
-        self.cleft_frame.grid(row=0, column=0, sticky="ns")
-        self.cright_frame.grid(row=0, column=1, sticky="nsew")
+        self.cleft_frame.grid(row=0, column=0, sticky="ns", padx=5)
+        self.cright_frame.grid(row=0, column=1, sticky="nsew", padx=5)
         self.bottom_frame.grid(row=2, column=0, sticky="ew")
-        self.inner_frame.grid(row=0, column=0, sticky="ew")
+        self.inner_frame.grid(row=0, column=0, sticky="ew", padx=15, pady=(0, 15))
 
         self.center_frame.grid_rowconfigure(0, weight=1)
         self.center_frame.grid_columnconfigure(1, weight=1)
@@ -243,7 +313,8 @@ class Pre_process:
                                     offvalue="",
                                     onvalue="-o",
                                     var=self.output,
-                                    command=lambda:[self.check_expression(), self.outcheck()])
+                                    command=lambda: [self.check_expression(),
+                                                     self.outcheck()])
 
         self.ent2 = ttk.Combobox(self.top_frame,
                                  width=25,
@@ -264,7 +335,9 @@ class Pre_process:
                                     command=self.check_expression)
 
         self.lbl3 = ttk.Label(self.cleft_frame,
-                              text="Time Zone")
+                              text="Time Zone",
+                              relief='groove',
+                              padding=3)
 
         self.cbx4 = ttk.Checkbutton(self.cleft_frame,
                                     offvalue=0,
@@ -292,7 +365,9 @@ class Pre_process:
                                      command=self.check_expression)
 
         self.lbl4 = ttk.Label(self.cleft_frame,
-                              text="Logging")
+                              text=" Logging",
+                              relief='groove',
+                              padding=3)
 
         self.cbx5 = ttk.Checkbutton(self.cleft_frame,
                                     text="Enabled",
@@ -309,7 +384,9 @@ class Pre_process:
                                     command=self.check_expression)
 
         self.lbl5 = ttk.Label(self.cleft_frame,
-                              text="VBN Options")
+                              text=" VBN Options",
+                              relief='groove',
+                              padding=3)
 
         self.cbx7 = ttk.Checkbutton(self.cleft_frame,
                                     text="Extract",
@@ -340,7 +417,9 @@ class Pre_process:
                                      command=self.check_expression)
 
         self.lbl6 = ttk.Label(self.cleft_frame,
-                              text="ccSubSDK",)
+                              text=" ccSubSDK",
+                              relief='groove',
+                              padding=3)
 
         self.cbx11 = ttk.Checkbutton(self.cleft_frame,
                                      text="Extract Blob",
@@ -353,22 +432,29 @@ class Pre_process:
 
         self.outputtext2 = tk.Text(self.cright_frame,
                                    bg='black',
-                                   fg='grey',
+                                   fg='light grey',
                                    yscrollcommand=self.scrollb.set,
+                                   font=('Consolas', 12, 'normal'),
                                    state='disabled')
-                                   
-        self.outputtext2.tag_configure(b'\x1b[1;93m', foreground="yellow")
+
+        self.outputtext2.tag_configure(b'\x1b[1;93m', foreground="yellow", font=('Consolas', 12, 'bold'))
         self.outputtext2.tag_configure(b'\x1b[1;33m', foreground="yellow")
-        self.outputtext2.tag_configure(b'\x1b[1;92m', foreground="green")
+        self.outputtext2.tag_configure(b'\x1b[1;92m', foreground="green", font=('Consolas', 12, 'bold'))
         self.outputtext2.tag_configure(b'\x1b[1;32m', foreground="green")
         self.outputtext2.tag_configure(b'\x1b[1;35m', foreground="purple")
         self.outputtext2.tag_configure(b'\x1b[1;31m', foreground="red")
         self.outputtext2.tag_configure(b'\x1b[1;36m', foreground="cyan")
-#        self.outputtext2.tag_configure(b'\x1b[1;0m', background="blue")
 
         self.scrollb.config(command=self.outputtext2.yview)
 
-        self.outputtext = tk.Text(self.inner_frame, height=2)
+        self.scrollb1 = ttk.Scrollbar(self.inner_frame)
+
+        self.outputtext = tk.Text(self.inner_frame,
+                                  height=2,
+                                  yscrollcommand=self.scrollb1.set)
+
+        self.scrollb1.config(command=self.outputtext.yview)
+
         self.check_expression()
 
         self.var = tk.IntVar()
@@ -397,26 +483,27 @@ class Pre_process:
         self.ent2.grid(row=1, column=6, padx=5)
         self.btn2.grid(row=1, column=7, padx=5)
         self.cbx3.grid(row=1, column=8)
-        self.lbl3.grid(row=0, column=0, sticky="w")
+        self.lbl3.grid(row=0, column=0, columnspan=2, sticky="nsew")
         self.cbx4.grid(row=0, column=1, sticky="w")
-        self.rbtn3.grid(row=1, column=0, sticky="w")
-        self.rbtn4.grid(row=1, column=1, sticky="w")
-        self.ent3.grid(row=2, column=0, columnspan=2, sticky="w")
-        self.lbl4.grid(row=3, column=0, sticky="w")
-        self.cbx5.grid(row=4, column=0, sticky="w")
-        self.cbx6.grid(row=4, column=1, sticky="w")
-        self.lbl5.grid(row=5, column=0, sticky="w")
-        self.cbx7.grid(row=6, column=0, sticky="w")
+        self.rbtn3.grid(row=1, column=0, sticky="w", pady=5)
+        self.rbtn4.grid(row=1, column=1, sticky="w", pady=5)
+        self.ent3.grid(row=2, column=0, columnspan=2, sticky="w", pady=(0, 10))
+        self.lbl4.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=5)
+        self.cbx5.grid(row=4, column=0, sticky="w", padx=(5, 0), pady=(0, 5))
+        self.cbx6.grid(row=4, column=1, sticky="w", pady=(0, 5))
+        self.lbl5.grid(row=5, column=0, columnspan=2, sticky="nsew", pady=5)
+        self.cbx7.grid(row=6, column=0, sticky="w", padx=5, pady=(0, 5))
         self.cbx8.grid(row=6, column=1, sticky="w")
-        self.cbx9.grid(row=7, column=0, sticky="w")
+        self.cbx9.grid(row=7, column=0, sticky="w", padx=5, pady=(0, 5))
         self.cbx10.grid(row=7, column=1, sticky="w")
-        self.lbl6.grid(row=8, column=0, sticky="w")
-        self.cbx11.grid(row=9, column=0, sticky="w")
+        self.lbl6.grid(row=8, column=0, columnspan=2, sticky="nsew", pady=5)
+        self.cbx11.grid(row=9, column=0, sticky="w", padx=5)
         self.outputtext2.grid(row=0, column=0, columnspan=6, rowspan=10, sticky="nsew")
         self.scrollb.grid(row=0, column=6, rowspan=10, sticky="nsew")
-        self.outputtext.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
-        self.button.grid(row=1, sticky="w", padx=5)
-        self.button2.grid(row=1, sticky="e", padx=5)
+        self.outputtext.grid(row=0, column=0, sticky="nsew", padx=(5, 0), pady=5)
+        self.scrollb1.grid(row=0, column=1, sticky="nsew", padx=(0, 5), pady=5)
+        self.button.grid(row=1, sticky="w", padx=5, pady=5)
+        self.button2.grid(row=1, columnspan=2, sticky="e", padx=5, pady=5)
         self.sg.grid(row=2, sticky='se')
 
     def check_expression(self, *args):
@@ -503,7 +590,10 @@ class Pre_process:
         for widgets in self.cleft_frame.winfo_children():
             widgets.configure(state='disable')
         for widgets in self.inner_frame.winfo_children():
-            widgets.configure(state='disable')
+            if str(widgets) == ".!frame3.!labelframe.!scrollbar":
+                pass
+            else:
+                widgets.configure(state='disable')
         self.outputtext2.config(state=tk.NORMAL)
         self.outputtext2.delete('1.0', tk.END)
         cmdlist = "py.exe -3 -u SEPparser.py " + self.cmd.get()
@@ -511,7 +601,7 @@ class Pre_process:
         ansi_escape = re.compile(b'(\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~]))')
         while True:
             line = ansi_escape.split(proc.stdout.readline())
-            line = [ x for x in line if b'' != x ]
+            line = [x for x in line if b'' != x]
             s = len(line)
             if s == 1:
                 self.outputtext2.insert(tk.END, "\r\n")
@@ -519,7 +609,7 @@ class Pre_process:
                 self.outputtext2.update_idletasks()
                 continue
 
-            if s%2 != 0:
+            if s % 2 != 0:
                 s = s - 1
 
             for i in range(0, s, 2):
@@ -539,13 +629,13 @@ class Pre_process:
         for widgets in self.cleft_frame.winfo_children():
             widgets.configure(state='normal')
         for widgets in self.inner_frame.winfo_children():
-            widgets.configure(state='normal')
+            if str(widgets) == ".!frame3.!labelframe.!scrollbar":
+                pass
+            else:
+                widgets.configure(state='normal')
 
-    def on_enter(self, e):
-        e.widget['selectcolor'] = 'grey'
-
-    def on_leave(self, e):
-        e.widget['selectcolor'] = 'white'
+        self.tcheck()
+        self.outcheck()
 
 
 def main():
@@ -574,10 +664,11 @@ def main():
     submenu = tk.Menu(tool_menu, tearoff=0)
 
     for theme_name in sorted(root.get_themes()):
-        submenu.add_command(label=theme_name, command=lambda t = theme_name:root.set_theme(t))
+        submenu.add_command(label=theme_name, command=lambda t = theme_name:[submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background=''), root.set_theme(t), submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background='grey')])
 
     tool_menu.add_cascade(label="Skins", menu=submenu)
     menubar.add_cascade(label="Tools", menu=tool_menu)
+    submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background='grey')
 
     # create all of the main containers
     Pre_process(root)
