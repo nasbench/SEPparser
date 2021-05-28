@@ -25,6 +25,10 @@ class ViewLogs:
         self.middle = ttk.Frame(self.btm_right, relief='groove', padding=10)
         self.bottom = ttk.Frame(self.btm_right, relief='groove', padding=10)
 
+        self.top.grid_columnconfigure(0, weight=1)
+        self.middle.grid_columnconfigure(0, weight=1)
+        self.bottom.grid_columnconfigure(0, weight=1)
+
         self.top.grid(row=0, column=0, sticky="ew")
         self.middle.grid(row=1, column=0, sticky="ew")
         self.bottom.grid(row=2, column=0, sticky="ew")
@@ -138,8 +142,16 @@ class readcsv:
         self.sg = ttk.Sizegrip(self.frame)
 
         self.sheet = Sheet(self.frame,
-                           data=pd.read_csv(log, keep_default_na=False, dtype=str, header=0, encoding ='latin1').values.tolist(),
-                           headers=pd.read_csv(log, keep_default_na=False, dtype=str, header=0, encoding ='latin1').columns.tolist(),
+                           data=pd.read_csv(log,
+                                            keep_default_na=False,
+                                            dtype=str,
+                                            header=0,
+                                            encoding='latin1').values.tolist(),
+                           headers=pd.read_csv(log,
+                                               keep_default_na=False,
+                                                dtype=str,
+                                                header=0,
+                                                encoding='latin1').columns.tolist(),
                            header_font=("Calibri", 11, "bold"))
 
         self.sheet.enable_bindings()
@@ -166,7 +178,7 @@ class readcsv:
                                      "rc_insert_row",
                                      "rc_delete_row"))
         self.frame.grid(row=0, column=0, sticky="nswe")
-        self.sheet.grid(row=0, column=0, sticky="nswe", padx=(15, 0))
+        self.sheet.grid(row=0, column=0, sticky="nswe", padx=10)
         if tl == 0:
             self.sg.grid(row=1, column=1, sticky='se')
 
@@ -231,13 +243,19 @@ class Pre_process:
         self.root = root
 
         # create all of the main containers
-        self.top_frame = ttk.Frame(self.root, padding=15)
+        self.top_frame = ttk.Frame(self.root)
+        self.top_inner = ttk.Frame(self.top_frame)
+        self.tleft_frame = ttk.LabelFrame(self.top_inner, text="Directory/Folder Input", padding=5)
+        self.tright_frame = ttk.LabelFrame(self.top_inner, text="Output Options", padding=5)
         self.center_frame = ttk.Frame(self.root, padding=10)
         self.cleft_frame = ttk.LabelFrame(self.center_frame, text="Other Options", padding=5)
         self.cright_frame = ttk.LabelFrame(self.center_frame, text="SEPparser Output", padding=5)
         self.bottom_frame = ttk.Frame(self.root)
         self.inner_frame = ttk.LabelFrame(self.bottom_frame, text="Current command line")
         self.top_frame.grid(row=0, column=0, sticky="ew")
+        self.top_inner.grid(row=0, column=0, sticky="ew", padx=15, pady=(15, 0))
+        self.tleft_frame.grid(row=0, column=0, sticky="ew")
+        self.tright_frame.grid(row=0, column=1, sticky="ew", padx=10)
         self.center_frame.grid(row=1, column=0, sticky="nsew")
         self.cleft_frame.grid(row=0, column=0, sticky="ns", padx=5)
         self.cright_frame.grid(row=0, column=1, sticky="nsew", padx=5)
@@ -274,41 +292,35 @@ class Pre_process:
         self.eb = tk.StringVar()
         self.cmd = tk.StringVar()
 
-        self.lbl1 = ttk.Label(self.top_frame,
-                              text="Directory/Folder Input:")
-
-        self.rbtn1 = ttk.Radiobutton(self.top_frame,
+        self.rbtn1 = ttk.Radiobutton(self.tleft_frame,
                                      text="Directory",
                                      variable=self.v,
                                      value="-d",
                                      command=self.check_expression)
 
-        self.rbtn2 = ttk.Radiobutton(self.top_frame,
+        self.rbtn2 = ttk.Radiobutton(self.tleft_frame,
                                      text="File",
                                      variable=self.v,
                                      value="-f",
                                      command=self.check_expression)
 
-        self.ent1 = ttk.Combobox(self.top_frame,
-                                 width=25,
+        self.ent1 = ttk.Combobox(self.tleft_frame,
+                                 width=38,
                                  textvariable=self.path)
 
-        self.btn1 = ttk.Button(self.top_frame,
+        self.btn1 = ttk.Button(self.tleft_frame,
                                text='...',
                                width=3,
                                command=lambda: self.callback())
 
-        self.cbx1 = ttk.Checkbutton(self.top_frame,
+        self.cbx1 = ttk.Checkbutton(self.tleft_frame,
                                     text="Kape Mode",
                                     offvalue="",
                                     onvalue="-k",
                                     var=self.kapemode,
                                     command=self.check_expression)
 
-        self.lbl2 = ttk.Label(self.top_frame,
-                              text="Output:")
-
-        self.cbx2 = ttk.Checkbutton(self.top_frame,
+        self.cbx2 = ttk.Checkbutton(self.tright_frame,
                                     text="Output Directory",
                                     offvalue="",
                                     onvalue="-o",
@@ -316,25 +328,25 @@ class Pre_process:
                                     command=lambda: [self.check_expression(),
                                                      self.outcheck()])
 
-        self.ent2 = ttk.Combobox(self.top_frame,
-                                 width=25,
+        self.ent2 = ttk.Combobox(self.tright_frame,
+                                 width=38,
                                  textvariable=self.outpath,
                                  state='disabled')
 
-        self.btn2 = ttk.Button(self.top_frame,
+        self.btn2 = ttk.Button(self.tright_frame,
                                text='...',
                                width=3,
                                state='disabled',
                                command=lambda: self.callback2())
 
-        self.cbx3 = ttk.Checkbutton(self.top_frame,
+        self.cbx3 = ttk.Checkbutton(self.tright_frame,
                                     text="Append",
                                     offvalue="",
                                     onvalue="-a",
                                     var=self.append,
                                     command=self.check_expression)
 
-        self.lbl3 = ttk.Label(self.cleft_frame,
+        self.lbl1 = ttk.Label(self.cleft_frame,
                               text="Time Zone",
                               relief='groove',
                               padding=3)
@@ -357,6 +369,12 @@ class Pre_process:
                               state='disabled',
                               textvariable=self.tzdata)
 
+        self.btn = ttk.Button(self.cleft_frame,
+                              text='...',
+                              width=3,
+                              state='disabled',
+                              command=lambda: self.callback3())
+
         self.rbtn4 = ttk.Radiobutton(self.cleft_frame,
                                      text="registrationInfo.xml",
                                      variable=self.tz,
@@ -364,7 +382,7 @@ class Pre_process:
                                      state='disabled',
                                      command=self.check_expression)
 
-        self.lbl4 = ttk.Label(self.cleft_frame,
+        self.lbl2 = ttk.Label(self.cleft_frame,
                               text=" Logging",
                               relief='groove',
                               padding=3)
@@ -383,7 +401,7 @@ class Pre_process:
                                     var=self.verbose,
                                     command=self.check_expression)
 
-        self.lbl5 = ttk.Label(self.cleft_frame,
+        self.lbl3 = ttk.Label(self.cleft_frame,
                               text=" VBN Options",
                               relief='groove',
                               padding=3)
@@ -416,7 +434,7 @@ class Pre_process:
                                      var=self.hf,
                                      command=self.check_expression)
 
-        self.lbl6 = ttk.Label(self.cleft_frame,
+        self.lbl4 = ttk.Label(self.cleft_frame,
                               text=" ccSubSDK",
                               relief='groove',
                               padding=3)
@@ -437,12 +455,12 @@ class Pre_process:
                                    font=('Consolas', 12, 'normal'),
                                    state='disabled')
 
-        self.outputtext2.tag_configure(b'\x1b[1;93m', foreground="yellow", font=('Consolas', 12, 'bold'))
-        self.outputtext2.tag_configure(b'\x1b[1;33m', foreground="yellow")
-        self.outputtext2.tag_configure(b'\x1b[1;92m', foreground="green", font=('Consolas', 12, 'bold'))
-        self.outputtext2.tag_configure(b'\x1b[1;32m', foreground="green")
-        self.outputtext2.tag_configure(b'\x1b[1;35m', foreground="purple")
         self.outputtext2.tag_configure(b'\x1b[1;31m', foreground="red")
+        self.outputtext2.tag_configure(b'\x1b[1;32m', foreground="green")
+        self.outputtext2.tag_configure(b'\x1b[1;33m', foreground="yellow")
+        self.outputtext2.tag_configure(b'\x1b[1;93m', foreground="yellow", font=('Consolas', 12, 'bold'))
+        self.outputtext2.tag_configure(b'\x1b[1;92m', foreground="green", font=('Consolas', 12, 'bold'))
+        self.outputtext2.tag_configure(b'\x1b[1;35m', foreground="purple")
         self.outputtext2.tag_configure(b'\x1b[1;36m', foreground="cyan")
 
         self.scrollb.config(command=self.outputtext2.yview)
@@ -459,50 +477,57 @@ class Pre_process:
 
         self.var = tk.IntVar()
 
-        self.button = ttk.Button(self.inner_frame,
-                                 text="Click Me",
-                                 width=8,
-                                 command=lambda: Post_process(root, self.outpath.get()))
+        self.button = ttk.Button(self.top_inner,
+                                 text="View Reports",
+                                 width=12,
+                                 state='disabled',
+                                 command=lambda: Post_process(root,
+                                                              self.outpath.get()))
 
         self.button2 = ttk.Button(self.inner_frame,
                                   text="Execute",
                                   width=7,
                                   command=lambda: threading.Thread(target=self.execute).start())
 
+        self.button3 = ttk.Button(self.inner_frame,
+                                  text="Copy Command",
+                                  width=15,
+                                  command=lambda: self.copy_command())
+
         self.sg = ttk.Sizegrip(self.root)
 
         # layout the widgets in the main frame
-        self.lbl1.grid(row=0, column=0, columnspan=5, sticky="w")
-        self.lbl2.grid(row=0, column=5, columnspan=4, sticky="w", padx=5)
-        self.rbtn1.grid(row=1, column=0)
-        self.rbtn2.grid(row=1, column=1, padx=5)
-        self.ent1.grid(row=1, column=2, padx=5)
-        self.btn1.grid(row=1, column=3, padx=5)
-        self.cbx1.grid(row=1, column=4, padx=5)
-        self.cbx2.grid(row=1, column=5, padx=5)
-        self.ent2.grid(row=1, column=6, padx=5)
-        self.btn2.grid(row=1, column=7, padx=5)
-        self.cbx3.grid(row=1, column=8)
-        self.lbl3.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        self.rbtn1.grid(row=0, column=0)
+        self.rbtn2.grid(row=0, column=1, padx=5)
+        self.ent1.grid(row=0, column=2, padx=(0, 5))
+        self.btn1.grid(row=0, column=3, padx=(0, 5))
+        self.cbx1.grid(row=0, column=4)
+        self.cbx2.grid(row=0, column=0)
+        self.ent2.grid(row=0, column=1, padx=5)
+        self.btn2.grid(row=0, column=2, padx=(0, 5))
+        self.cbx3.grid(row=0, column=3)
+        self.button.grid(row=0, column=2, sticky="nsew", pady=(7, 0))
+        self.lbl1.grid(row=0, column=0, columnspan=2, sticky="nsew")
         self.cbx4.grid(row=0, column=1, sticky="w")
         self.rbtn3.grid(row=1, column=0, sticky="w", pady=5)
         self.rbtn4.grid(row=1, column=1, sticky="w", pady=5)
-        self.ent3.grid(row=2, column=0, columnspan=2, sticky="w", pady=(0, 10))
-        self.lbl4.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=5)
+        self.ent3.grid(row=2, column=0, sticky="w", padx=(0, 5), pady=(0, 10))
+        self.btn.grid(row=2, column=1, sticky="w", pady=(0, 10))
+        self.lbl2.grid(row=3, column=0, columnspan=2, sticky="nsew", pady=5)
         self.cbx5.grid(row=4, column=0, sticky="w", padx=(5, 0), pady=(0, 5))
         self.cbx6.grid(row=4, column=1, sticky="w", pady=(0, 5))
-        self.lbl5.grid(row=5, column=0, columnspan=2, sticky="nsew", pady=5)
+        self.lbl3.grid(row=5, column=0, columnspan=2, sticky="nsew", pady=5)
         self.cbx7.grid(row=6, column=0, sticky="w", padx=5, pady=(0, 5))
         self.cbx8.grid(row=6, column=1, sticky="w")
         self.cbx9.grid(row=7, column=0, sticky="w", padx=5, pady=(0, 5))
         self.cbx10.grid(row=7, column=1, sticky="w")
-        self.lbl6.grid(row=8, column=0, columnspan=2, sticky="nsew", pady=5)
+        self.lbl4.grid(row=8, column=0, columnspan=2, sticky="nsew", pady=5)
         self.cbx11.grid(row=9, column=0, sticky="w", padx=5)
         self.outputtext2.grid(row=0, column=0, columnspan=6, rowspan=10, sticky="nsew")
         self.scrollb.grid(row=0, column=6, rowspan=10, sticky="nsew")
         self.outputtext.grid(row=0, column=0, sticky="nsew", padx=(5, 0), pady=5)
         self.scrollb1.grid(row=0, column=1, sticky="nsew", padx=(0, 5), pady=5)
-        self.button.grid(row=1, sticky="w", padx=5, pady=5)
+        self.button3.grid(row=1, sticky="w", padx=5, pady=5)
         self.button2.grid(row=1, columnspan=2, sticky="e", padx=5, pady=5)
         self.sg.grid(row=2, sticky='se')
 
@@ -537,6 +562,10 @@ class Pre_process:
             opt += f' {self.eb.get()}'
         if len(self.tz.get()) > 1:
             opt += f' {self.tz.get()}'
+            if self.tz.get() == '-r':
+                self.btn.configure(state='normal')
+            else:
+                self.btn.configure(state='disable')
         if len(self.tzdata.get()) > 0:
             opt += f' {self.tzdata.get()}'
         self.outputtext.delete(1.0, tk.END)  # clear the outputtext text widget
@@ -546,18 +575,29 @@ class Pre_process:
 
     def callback(self):
         if self.v.get() == "-d":
-            _ = filedialog.askdirectory(initialdir='C:/', title='Select Directory')
+            _ = filedialog.askdirectory(initialdir='C:/',
+                                        title='Select Directory')
         else:
-            _ = filedialog.askopenfilename(initialdir='C:/', title='Select File')
+            _ = filedialog.askopenfilename(initialdir='C:/',
+                                           title='Select File')
         self.path.set(_)
         self.check_expression()
 
     def callback2(self):
         if self.output.get() == "-o":
-            _ = filedialog.askdirectory(initialdir='C:/', title='Select Directory')
+            _ = filedialog.askdirectory(initialdir='C:/',
+                                        title='Select Directory')
         else:
             _ = ''
         self.outpath.set(_)
+        self.check_expression()
+
+    def callback3(self):
+        _ = filedialog.askopenfilename(initialdir='C:/',
+                                       title='Select File',
+                                       initialfile='registrationInfo.xml',
+                                       filetypes=[("Text files", "*.xml")])
+        self.tzdata.set(_)
         self.check_expression()
 
     def outcheck(self):
@@ -585,7 +625,10 @@ class Pre_process:
         self.check_expression()
 
     def execute(self):
-        for widgets in self.top_frame.winfo_children():
+        self.button.configure(state='disable')
+        for widgets in self.tleft_frame.winfo_children():
+            widgets.configure(state='disable')
+        for widgets in self.tright_frame.winfo_children():
             widgets.configure(state='disable')
         for widgets in self.cleft_frame.winfo_children():
             widgets.configure(state='disable')
@@ -624,18 +667,33 @@ class Pre_process:
                 break
 
         self.outputtext2.config(state=tk.DISABLED)
-        for widgets in self.top_frame.winfo_children():
+
+        for widgets in self.tleft_frame.winfo_children():
             widgets.configure(state='normal')
+
         for widgets in self.cleft_frame.winfo_children():
             widgets.configure(state='normal')
+
         for widgets in self.inner_frame.winfo_children():
             if str(widgets) == ".!frame3.!labelframe.!scrollbar":
                 pass
             else:
                 widgets.configure(state='normal')
 
+        self.button.configure(state='normal')
+        self.cbx2.configure(state='normal')
+        self.cbx3.configure(state='normal')
+
+        if self.output.get() == "-o":
+            self.ent2.configure(state='normal')
+            self.btn2.configure(state='normal')
+
         self.tcheck()
-        self.outcheck()
+
+    def copy_command(self):
+        cmd = self.outputtext.get('1.0', tk.END)
+        print(cmd)
+        self.root.clipboard_append(cmd[:-1])
 
 
 def main():
@@ -664,7 +722,10 @@ def main():
     submenu = tk.Menu(tool_menu, tearoff=0)
 
     for theme_name in sorted(root.get_themes()):
-        submenu.add_command(label=theme_name, command=lambda t = theme_name:[submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background=''), root.set_theme(t), submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background='grey')])
+        submenu.add_command(label=theme_name,
+                            command=lambda t=theme_name: [submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background=''),
+                                                          root.set_theme(t),
+                                                          submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background='grey')])
 
     tool_menu.add_cascade(label="Skins", menu=submenu)
     menubar.add_cascade(label="Tools", menu=tool_menu)
