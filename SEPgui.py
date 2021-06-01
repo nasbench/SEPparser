@@ -149,9 +149,9 @@ class readcsv:
                                             encoding='latin1').values.tolist(),
                            headers=pd.read_csv(log,
                                                keep_default_na=False,
-                                                dtype=str,
-                                                header=0,
-                                                encoding='latin1').columns.tolist(),
+                                               dtype=str,
+                                               header=0,
+                                               encoding='latin1').columns.tolist(),
                            header_font=("Calibri", 11, "bold"))
 
         self.sheet.enable_bindings()
@@ -355,6 +355,7 @@ class Pre_process:
                                     offvalue=0,
                                     onvalue=1,
                                     var=self.tvalue,
+                                    takefocus=False,
                                     command=self.tcheck)
 
         self.rbtn3 = ttk.Radiobutton(self.cleft_frame,
@@ -424,6 +425,7 @@ class Pre_process:
                                     text="Hex Dump",
                                     offvalue="",
                                     onvalue="-hd",
+                                    state='disabled',
                                     var=self.hd,
                                     command=self.check_expression)
 
@@ -458,8 +460,10 @@ class Pre_process:
         self.outputtext2.tag_configure(b'\x1b[1;31m', foreground="red")
         self.outputtext2.tag_configure(b'\x1b[1;32m', foreground="green")
         self.outputtext2.tag_configure(b'\x1b[1;33m', foreground="yellow")
-        self.outputtext2.tag_configure(b'\x1b[1;93m', foreground="yellow", font=('Consolas', 12, 'bold'))
-        self.outputtext2.tag_configure(b'\x1b[1;92m', foreground="green", font=('Consolas', 12, 'bold'))
+        self.outputtext2.tag_configure(b'\x1b[1;93m', foreground="yellow",
+                                       font=('Consolas', 12, 'bold'))
+        self.outputtext2.tag_configure(b'\x1b[1;92m', foreground="green",
+                                       font=('Consolas', 12, 'bold'))
         self.outputtext2.tag_configure(b'\x1b[1;35m', foreground="purple")
         self.outputtext2.tag_configure(b'\x1b[1;36m', foreground="cyan")
 
@@ -535,13 +539,16 @@ class Pre_process:
         # Your code that checks the expression
         self.outputtext.config(state=tk.NORMAL)
         varContent = self.v.get()  # get what's written in the inputentry entry widget
+
+        if varContent == "-d":
+            self.cbx9.configure(state='disable')
+            self.hd.set("")
+        else:
+            self.cbx9.configure(state='normal')
+
         pathContent = self.path.get()
         # Optional arguments
         opt = ''
-        if len(self.output.get()) > 1:
-            opt += f' {self.output.get()}'
-        if len(self.outpath.get()) > 0:
-            opt += f' "{self.outpath.get()}"'
         if len(self.kapemode.get()) > 1:
             opt += f' {self.kapemode.get()}'
         if len(self.append.get()) > 1:
@@ -550,16 +557,58 @@ class Pre_process:
             opt += f' {self.logging.get()}'
         if len(self.verbose.get()) > 1:
             opt += f' {self.verbose.get()}'
+        if len(self.hd.get()) > 1:
+            opt += f' {self.hd.get()}'
+        if self.hd.get() == "-hd":
+            self.cbx1.configure(state='disable')
+            self.cbx2.configure(state='disable')
+            self.cbx3.configure(state='disable')
+            self.lbl1.configure(state='disable')
+            self.cbx4.configure(state='disable')
+            self.cbx7.configure(state='disable')
+            self.cbx8.configure(state='disable')
+            self.cbx10.configure(state='disable')
+            self.lbl4.configure(state='disable')
+            self.cbx11.configure(state='disable')
+            self.ent2.configure(state='disable')
+            self.btn2.configure(state='disable')
+            self.rbtn3.configure(state='disable')
+            self.rbtn4.configure(state='disable')
+            self.ent3.configure(state='disable')
+            self.kapemode.set("")
+            self.append.set("")
+            self.e.set("")
+            self.qd.set("")
+            self.hf.set("")
+            self.eb.set("")
+            self.output.set("")
+            self.outpath.set('')
+            self.tvalue.set(0)
+            self.tz.set(' ')
+            self.tzdata.set(' ')
+        else:
+            self.cbx1.configure(state='normal')
+            self.cbx2.configure(state='normal')
+            self.cbx3.configure(state='normal')
+            self.lbl1.configure(state='normal')
+            self.cbx4.configure(state='normal')
+            self.cbx7.configure(state='normal')
+            self.cbx8.configure(state='normal')
+            self.cbx10.configure(state='normal')
+            self.cbx11.configure(state='normal')
+            self.lbl4.configure(state='normal')
         if len(self.e.get()) > 1:
             opt += f' {self.e.get()}'
         if len(self.qd.get()) > 1:
             opt += f' {self.qd.get()}'
-        if len(self.hd.get()) > 1:
-            opt += f' {self.hd.get()}'
         if len(self.hf.get()) > 1:
             opt += f' {self.hf.get()}'
         if len(self.eb.get()) > 1:
             opt += f' {self.eb.get()}'
+        if len(self.output.get()) > 1:
+            opt += f' {self.output.get()}'
+        if len(self.outpath.get()) > 0:
+            opt += f' "{self.outpath.get()}"'
         if len(self.tz.get()) > 1:
             opt += f' {self.tz.get()}'
             if self.tz.get() == '-r':
@@ -696,6 +745,38 @@ class Pre_process:
         self.root.clipboard_append(cmd[:-1])
 
 
+class quit:
+    def __init__(self, root):
+        self.win = tk.Toplevel(root)
+        self.win.attributes("-toolwindow", 1)
+        self.win.title("Please confirm")
+        self.win.grab_set()
+        self.win.protocol("WM_DELETE_WINDOW", self.__callback)
+
+        x = root.winfo_x()
+        y = root.winfo_y()
+        w = root.winfo_width()
+        h = root.winfo_height()
+        self.win.geometry("+%d+%d" % (x + w/2, y + h/2))
+
+        self.label = ttk.Label(self.win, text="Are you sure you want to exit?")
+        self.yes = ttk.Button(self.win, text="Yes", command=lambda: self.btn1(root))
+        self.no = ttk.Button(self.win, text="No", command=self.btn2)
+
+        self.label.grid(row=0, column=0, columnspan=2)
+        self.yes.grid(row=1, column=0)
+        self.no.grid(row=1, column=1)
+
+    def btn1(self, root):
+        root.destroy()
+
+    def btn2(self):
+        self.win.destroy()
+
+    def __callback(self):
+        return
+
+
 def main():
     def menu_theme():
         print('yes')
@@ -709,6 +790,7 @@ def main():
     root = ThemedTk()
     root.title('SEPparser GUI')
     root.minsize(745, 400)
+    root.protocol("WM_DELETE_WINDOW", lambda: quit(root))
 
     # layout all of the main containers
     root.grid_rowconfigure(1, weight=1)
@@ -717,18 +799,28 @@ def main():
     menubar = tk.Menu(root)
     root.config(menu=menubar)
 
+    file_menu = tk.Menu(menubar, tearoff=0)
     tool_menu = tk.Menu(menubar, tearoff=0)
-
+    help_menu = tk.Menu(menubar, tearoff=0)
     submenu = tk.Menu(tool_menu, tearoff=0)
+    pro_menu = tk.Menu(file_menu, tearoff=0)
 
     for theme_name in sorted(root.get_themes()):
         submenu.add_command(label=theme_name,
                             command=lambda t=theme_name: [submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background=''),
                                                           root.set_theme(t),
                                                           submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background='grey')])
-
+    file_menu.add_cascade(label="Project", menu=pro_menu)
+    file_menu.add_separator()
+    file_menu.add_command(label="Exit", command=lambda: quit(root))
+    pro_menu.add_command(label="Load")
+    pro_menu.add_command(label="Save")
+    pro_menu.add_command(label="Save As")
+    help_menu.add_command(label="About")
     tool_menu.add_cascade(label="Skins", menu=submenu)
+    menubar.add_cascade(label="File", menu=file_menu)
     menubar.add_cascade(label="Tools", menu=tool_menu)
+    menubar.add_cascade(label="Help", menu=help_menu)
     submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background='grey')
 
     # create all of the main containers
