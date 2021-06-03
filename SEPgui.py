@@ -194,48 +194,85 @@ class Post_process:
             else:
                 widgets.destroy()
 
-        self.top_frame = ttk.Frame(self.root, width=450, height=50, padding=3)
-        self.btm_frame = ttk.Frame(self.root)
+        self.outer_frame = ttk.Frame(self.root)
+        self.main_frame = ttk.Frame(self.outer_frame, relief='groove', padding=5)
+        self.top_frame = ttk.Frame(self.main_frame)
+        self.btm_frame = ttk.Frame(self.main_frame)
+        self.outer_frame.grid(row=0, column=0, sticky="nsew")
+        self.main_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
         self.top_frame.grid(row=0, sticky="ew")
-        self.btm_frame.grid(row=1, rowspan=1, sticky="nsew")
+        self.btm_frame.grid(row=1, sticky="nsew")
 
         # create the bottom frame widgets
+        self.outer_frame.grid_rowconfigure(0, weight=1)
+        self.outer_frame.grid_columnconfigure(0, weight=1)
+        self.main_frame.grid_rowconfigure(0, weight=0)
+        self.main_frame.grid_rowconfigure(1, weight=1)
+        self.main_frame.grid_columnconfigure(0, weight=1)
+        self.top_frame.grid_rowconfigure(0, minsize=40, weight=0)
+        self.top_frame.grid_columnconfigure(1, weight=1)
         self.btm_frame.grid_rowconfigure(0, weight=1)
         self.btm_frame.grid_columnconfigure(1, weight=1)
 
-        self.btn = ttk.Button(self.top_frame, text="Help",
-                              command=lambda: ViewLogs(self.btm_right))
-
-        self.btm_left = ttk.Frame(self.btm_frame, width=100, height=300, padding=10)
-        self.btm_right = ttk.Frame(self.btm_frame, width=350, height=300, padding=10)
+        self.btm_left = ttk.Frame(self.btm_frame)
+        self.btm_right = ttk.Frame(self.btm_frame, padding=10)
 
         self.btm_left.grid(row=0, column=0, sticky="ns")
         self.btm_right.grid(row=0, column=1, sticky="nsew", pady=(0, 10))
 
+        self.btm_left.grid_rowconfigure(0, weight=0)
+        self.btm_left.grid_rowconfigure(1, weight=0)
+        self.btm_left.grid_rowconfigure(2, weight=0)
+        self.btm_left.grid_rowconfigure(3, weight=0)
+        self.btm_left.grid_rowconfigure(4, weight=1)
+        self.btm_left.grid_columnconfigure(1, weight=1)
+
+        self.label = ttk.Label(self.top_frame, text="")
+        font = (tkFont.Font(self.label['font'])).actual()
+        font['weight'] = 'bold'
+        self.label.config(font=font)
+
+        self.separatorx = ttk.Separator(self.btm_left, orient='vertical')
+        self.separatory = ttk.Separator(self.top_frame, orient='horizontal')
+
         self.btn1 = ttk.Button(self.btm_left,
                                text="Timeline",
-                               command=lambda: readcsv(self.btm_right, self.outpath + '\Symantec_Timeline.csv', 1))
+                               command=lambda: [readcsv(self.btm_right, self.outpath + '\Symantec_Timeline.csv', 1), self.onclick(self.btn1['text'])])
 
         self.btn2 = ttk.Button(self.btm_left,
                                text="View Settings",
-                               command=lambda: readcsv(self.btm_right, self.outpath + '\settings.csv', 1))
+                               command=lambda: [readcsv(self.btm_right, self.outpath + '\settings.csv', 1), self.onclick(self.btn2['text'])])
 
         self.btn3 = ttk.Button(self.btm_left,
                                text="View Quarantine",
-                               command=lambda: readcsv(self.btm_right, self.outpath + '\quarantine.csv', 1))
+                               command=lambda: [readcsv(self.btm_right, self.outpath + '\quarantine.csv', 1), self.onclick(self.btn3['text'])])
 
         self.btn4 = ttk.Button(self.btm_left,
                                text="View Logs",
-                               command=lambda: ViewLogs(self.btm_right, self.outpath))
+                               command=lambda: [ViewLogs(self.btm_right, self.outpath), self.onclick(self.btn4['text'])])
 
-        self.sg = ttk.Sizegrip(self.root)
+        self.sg = ttk.Sizegrip(self.main_frame)
 
-        self.btn.grid(row=0, column=2, sticky="e")
-        self.btn1.grid(row=0, column=0, sticky="ew", pady=1)
-        self.btn2.grid(row=1, column=0, sticky="ew", pady=1)
-        self.btn3.grid(row=2, column=0, sticky="ew", pady=1)
-        self.btn4.grid(row=3, column=0, sticky="ew", pady=1)
+        self.label.grid(row=0, column=1, sticky="sw", padx=5)
+        self.separatory.grid(row=1, column=1, sticky="ew")
+        self.btn1.grid(row=0, column=0, sticky="ew", padx=(0, 5), pady=(10, 1))
+        self.btn2.grid(row=1, column=0, sticky="ew", padx=(0, 5), pady=1)
+        self.btn3.grid(row=2, column=0, sticky="ew", padx=(0, 5), pady=1)
+        self.btn4.grid(row=3, column=0, sticky="ew", padx=(0, 5), pady=1)
+        self.separatorx.grid(row=0, column=1, rowspan=5, sticky="ns")
         self.sg.grid(row=1, sticky='se')
+
+        self.btn4.bind('<<ThemeChanged>>', self.row_width)
+        self.row_width()
+
+    def row_width(self, *args):
+        self.btm_frame.update()
+        x = self.btm_left.bbox(0, 0)[2]
+        self.top_frame.grid_columnconfigure(0, minsize=x, weight=0)
+        
+    def onclick(self, t):
+        self.label.config(text=t)
+#        self.label.update()
 
 
 class Pre_process:
@@ -243,15 +280,24 @@ class Pre_process:
         self.root = root
 
         # create all of the main containers
-        self.top_frame = ttk.Frame(self.root)
+        self.outer_frame = ttk.Frame(self.root)
+        self.main_frame = ttk.Frame(self.outer_frame, relief='groove', padding=5)
+        self.top_frame = ttk.Frame(self.main_frame)
         self.top_inner = ttk.Frame(self.top_frame)
         self.tleft_frame = ttk.LabelFrame(self.top_inner, text="Directory/Folder Input", padding=5)
         self.tright_frame = ttk.LabelFrame(self.top_inner, text="Output Options", padding=5)
-        self.center_frame = ttk.Frame(self.root, padding=10)
+        self.center_frame = ttk.Frame(self.main_frame, padding=10)
         self.cleft_frame = ttk.LabelFrame(self.center_frame, text="Other Options", padding=5)
         self.cright_frame = ttk.LabelFrame(self.center_frame, text="SEPparser Output", padding=5)
-        self.bottom_frame = ttk.Frame(self.root)
+        self.bottom_frame = ttk.Frame(self.main_frame)
         self.inner_frame = ttk.LabelFrame(self.bottom_frame, text="Current command line")
+        self.outer_frame.grid(row=0, column=0, sticky="nsew")
+        self.main_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+        self.outer_frame.grid_rowconfigure(0, weight=1)
+        self.outer_frame.grid_columnconfigure(0, weight=1)
+        self.main_frame.grid_rowconfigure(0, weight=1)
+        self.main_frame.grid_columnconfigure(0, weight=1)
+        
         self.top_frame.grid(row=0, column=0, sticky="ew")
         self.top_inner.grid(row=0, column=0, sticky="ew", padx=15, pady=(15, 0))
         self.tleft_frame.grid(row=0, column=0, sticky="ew")
@@ -484,7 +530,7 @@ class Pre_process:
         self.button = ttk.Button(self.top_inner,
                                  text="View Reports",
                                  width=12,
-                                 state='disabled',
+#                                 state='disabled',
                                  command=lambda: Post_process(root,
                                                               self.outpath.get()))
 
@@ -498,7 +544,7 @@ class Pre_process:
                                   width=15,
                                   command=lambda: self.copy_command())
 
-        self.sg = ttk.Sizegrip(self.root)
+        self.sg = ttk.Sizegrip(self.main_frame)
 
         # layout the widgets in the main frame
         self.rbtn1.grid(row=0, column=0)
@@ -759,13 +805,18 @@ class quit:
         h = root.winfo_height()
         self.win.geometry("+%d+%d" % (x + w/2, y + h/2))
 
-        self.label = ttk.Label(self.win, text="Are you sure you want to exit?")
-        self.yes = ttk.Button(self.win, text="Yes", command=lambda: self.btn1(root))
-        self.no = ttk.Button(self.win, text="No", command=self.btn2)
+        self.frame = ttk.Frame(self.win)
+        self.inner_frame = ttk.Frame(self.frame, relief='groove', padding=5)
+        self.frame.grid(row=0, column=0)
+        self.inner_frame.grid(row=0, column=0, padx=5, pady=5)
+        
+        self.label = ttk.Label(self.inner_frame, text="Are you sure you want to exit?", padding=5)
+        self.yes = ttk.Button(self.inner_frame, text="Yes", command=lambda: self.btn1(root))
+        self.no = ttk.Button(self.inner_frame, text="No", command=self.btn2)
 
         self.label.grid(row=0, column=0, columnspan=2)
-        self.yes.grid(row=1, column=0)
-        self.no.grid(row=1, column=1)
+        self.yes.grid(row=1, column=0, padx=(5, 0), pady=5)
+        self.no.grid(row=1, column=1, padx=(0, 5), pady=5)
 
     def btn1(self, root):
         root.destroy()
@@ -793,7 +844,7 @@ def main():
     root.protocol("WM_DELETE_WINDOW", lambda: quit(root))
 
     # layout all of the main containers
-    root.grid_rowconfigure(1, weight=1)
+    root.grid_rowconfigure(0, weight=1)
     root.grid_columnconfigure(0, weight=1)
 
     menubar = tk.Menu(root)
