@@ -1,5 +1,6 @@
 import os
 import re
+import json
 from tksheet import Sheet
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -10,6 +11,9 @@ import subprocess
 import threading
 import pandas as pd
 
+with open("SEPgui.settings", "r") as jsonfile:
+    data = json.load(jsonfile)
+    jsonfile.close()
 
 class ViewLogs:
     def __init__(self, btm_right, outpath):
@@ -203,7 +207,6 @@ class Post_process:
         self.top_frame.grid(row=0, sticky="ew")
         self.btm_frame.grid(row=1, sticky="nsew")
 
-        # create the bottom frame widgets
         self.outer_frame.grid_rowconfigure(0, weight=1)
         self.outer_frame.grid_columnconfigure(0, weight=1)
         self.main_frame.grid_rowconfigure(0, weight=0)
@@ -269,17 +272,15 @@ class Post_process:
         self.btm_frame.update()
         x = self.btm_left.bbox(0, 0)[2]
         self.top_frame.grid_columnconfigure(0, minsize=x, weight=0)
-        
+
     def onclick(self, t):
         self.label.config(text=t)
-#        self.label.update()
 
 
 class Pre_process:
     def __init__(self, root):
         self.root = root
 
-        # create all of the main containers
         self.outer_frame = ttk.Frame(self.root)
         self.main_frame = ttk.Frame(self.outer_frame, relief='groove', padding=5)
         self.top_frame = ttk.Frame(self.main_frame)
@@ -297,7 +298,7 @@ class Pre_process:
         self.outer_frame.grid_columnconfigure(0, weight=1)
         self.main_frame.grid_rowconfigure(0, weight=1)
         self.main_frame.grid_columnconfigure(0, weight=1)
-        
+
         self.top_frame.grid(row=0, column=0, sticky="ew")
         self.top_inner.grid(row=0, column=0, sticky="ew", padx=15, pady=(15, 0))
         self.tleft_frame.grid(row=0, column=0, sticky="ew")
@@ -354,6 +355,8 @@ class Pre_process:
                                  width=38,
                                  textvariable=self.path)
 
+#        self.ent1['values'] = sorted(data['directory'].split('|'))
+
         self.btn1 = ttk.Button(self.tleft_frame,
                                text='...',
                                width=3,
@@ -378,6 +381,8 @@ class Pre_process:
                                  width=38,
                                  textvariable=self.outpath,
                                  state='disabled')
+
+        self.ent2['values'] = sorted(data['output'].split('|'))
 
         self.btn2 = ttk.Button(self.tright_frame,
                                text='...',
@@ -537,7 +542,7 @@ class Pre_process:
         self.button2 = ttk.Button(self.inner_frame,
                                   text="Execute",
                                   width=7,
-                                  command=lambda: threading.Thread(target=self.execute).start())
+                                  command=lambda: [threading.Thread(target=self.execute).start(), self.updtent2(), self.updtent1()])
 
         self.button3 = ttk.Button(self.inner_frame,
                                   text="Copy Command",
@@ -546,7 +551,6 @@ class Pre_process:
 
         self.sg = ttk.Sizegrip(self.main_frame)
 
-        # layout the widgets in the main frame
         self.rbtn1.grid(row=0, column=0)
         self.rbtn2.grid(row=0, column=1, padx=5)
         self.ent1.grid(row=0, column=2, padx=(0, 5))
@@ -582,14 +586,15 @@ class Pre_process:
         self.sg.grid(row=2, sticky='se')
 
     def check_expression(self, *args):
-        # Your code that checks the expression
         self.outputtext.config(state=tk.NORMAL)
-        varContent = self.v.get()  # get what's written in the inputentry entry widget
+        varContent = self.v.get()
 
         if varContent == "-d":
+            self.ent1['values'] = sorted(data['directory'].split('|'))
             self.cbx9.configure(state='disable')
             self.hd.set("")
         else:
+            self.ent1['values'] = sorted(data['file'].split('|'))
             self.cbx9.configure(state='normal')
 
         pathContent = self.path.get()
@@ -728,7 +733,7 @@ class Pre_process:
         for widgets in self.cleft_frame.winfo_children():
             widgets.configure(state='disable')
         for widgets in self.inner_frame.winfo_children():
-            if str(widgets) == ".!frame3.!labelframe.!scrollbar":
+            if str(widgets) == ".!frame.!frame.!frame3.!labelframe.!scrollbar":
                 pass
             else:
                 widgets.configure(state='disable')
@@ -744,7 +749,7 @@ class Pre_process:
             if s == 1:
                 self.outputtext2.insert(tk.END, "\r\n")
                 self.outputtext2.see(tk.END)
-                self.outputtext2.update_idletasks()
+#                self.outputtext2.update_idletasks()
                 continue
 
             if s % 2 != 0:
@@ -756,7 +761,7 @@ class Pre_process:
 
                 self.outputtext2.insert(tk.END, w, tag)
                 self.outputtext2.see(tk.END)
-                self.outputtext2.update_idletasks()
+#                self.outputtext2.update_idletasks()
 
             if not line:
                 break
@@ -770,7 +775,7 @@ class Pre_process:
             widgets.configure(state='normal')
 
         for widgets in self.inner_frame.winfo_children():
-            if str(widgets) == ".!frame3.!labelframe.!scrollbar":
+            if str(widgets) == ".!frame.!frame.!frame3.!labelframe.!scrollbar":
                 pass
             else:
                 widgets.configure(state='normal')
@@ -789,6 +794,21 @@ class Pre_process:
         cmd = self.outputtext.get('1.0', tk.END)
         print(cmd)
         self.root.clipboard_append(cmd[:-1])
+
+    def updtent2(self):
+        if self.outpath.get() not in data['output'].split('|'):
+            data['output'] = f"{self.outpath.get()}|{data['output']}"
+            self.ent2['values'] = sorted(data['output'].split('|'))
+
+    def updtent1(self):
+        if self.v.get() == "-d":
+            if self.path.get() not in data['directory'].split('|'):
+                data['directory'] = f"{self.path.get()}|{data['directory']}"
+                self.ent1['values'] = sorted(data['directory'].split('|'))
+        else:
+            if self.path.get() not in data['file'].split('|'):
+                data['file'] = f"{self.path.get()}|{data['file']}"
+                self.ent1['values'] = sorted(data['file'].split('|'))
 
 
 class quit:
@@ -809,7 +829,7 @@ class quit:
         self.inner_frame = ttk.Frame(self.frame, relief='groove', padding=5)
         self.frame.grid(row=0, column=0)
         self.inner_frame.grid(row=0, column=0, padx=5, pady=5)
-        
+
         self.label = ttk.Label(self.inner_frame, text="Are you sure you want to exit?", padding=5)
         self.yes = ttk.Button(self.inner_frame, text="Yes", command=lambda: self.btn1(root))
         self.no = ttk.Button(self.inner_frame, text="No", command=self.btn2)
@@ -819,6 +839,8 @@ class quit:
         self.no.grid(row=1, column=1, padx=(0, 5), pady=5)
 
     def btn1(self, root):
+        with open("SEPgui.settings", "w") as jsonfile:
+            json.dump(data, jsonfile)
         root.destroy()
 
     def btn2(self):
@@ -830,7 +852,6 @@ class quit:
 
 def main():
     def menu_theme():
-        print('yes')
         s = ttk.Style()
         bg = s.lookup('TFrame', 'background')
         fg = s.lookup('TFrame', 'foreground')
@@ -843,7 +864,6 @@ def main():
     root.minsize(745, 400)
     root.protocol("WM_DELETE_WINDOW", lambda: quit(root))
 
-    # layout all of the main containers
     root.grid_rowconfigure(0, weight=1)
     root.grid_columnconfigure(0, weight=1)
 
@@ -874,7 +894,6 @@ def main():
     menubar.add_cascade(label="Help", menu=help_menu)
     submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background='grey')
 
-    # create all of the main containers
     Pre_process(root)
 
     root.mainloop()
