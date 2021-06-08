@@ -11,9 +11,13 @@ import subprocess
 import threading
 import pandas as pd
 
-with open("SEPgui.settings", "r") as jsonfile:
-    data = json.load(jsonfile)
-    jsonfile.close()
+if os.path.isfile('SEPgui.settings'):
+    with open("SEPgui.settings", "r") as jsonfile:
+        data = json.load(jsonfile)
+        jsonfile.close()
+else:
+    data = json.loads('{"directory": "", "file": "", "output": ""}')
+
 
 class ViewLogs:
     def __init__(self, btm_right, outpath):
@@ -132,17 +136,28 @@ class readcsv:
     def __init__(self, master, log, tl):
         if tl == 0:
             self.master = tk.Toplevel(master)
+            self.outer_frame = ttk.Frame(self.master)
+            self.outer_frame.grid_columnconfigure(0, weight=1)
+            self.outer_frame.grid_rowconfigure(0, weight=1)
+            self.outer_frame.grid(row=0, column=0, sticky="nswe")
+            self.frame = ttk.Frame(self.outer_frame, relief='groove', padding=5)
+            self.separatorl = ttk.Separator(self.frame, orient='vertical')
+            self.separatorr = ttk.Separator(self.frame, orient='vertical')
+            self.separatort = ttk.Separator(self.frame, orient='horizontal')
+            self.separatorb = ttk.Separator(self.frame, orient='horizontal')
+            self.frame.grid_columnconfigure(1, weight=1)
+            self.frame.grid_rowconfigure(1, weight=1)
         else:
             self.master = master
             for widgets in self.master.winfo_children():
                 widgets.destroy()
+            self.frame = ttk.Frame(self.master, relief='groove', padding=1)
+            self.frame.grid_columnconfigure(0, weight=1)
+            self.frame.grid_rowconfigure(0, weight=1)
 
         self.log = log
         self.master.grid_columnconfigure(0, weight=1)
         self.master.grid_rowconfigure(0, weight=1)
-        self.frame = ttk.Frame(self.master)
-        self.frame.grid_columnconfigure(0, weight=1)
-        self.frame.grid_rowconfigure(0, weight=1)
         self.sg = ttk.Sizegrip(self.frame)
 
         self.sheet = Sheet(self.frame,
@@ -161,6 +176,7 @@ class readcsv:
         self.sheet.enable_bindings()
         self.frame.grid(row=0, column=0, sticky="nswe")
         self.sheet.grid(row=0, column=0, sticky="nswe")
+
         self.sheet.enable_bindings(("single_select",
                                     "drag_select",
                                     "select_all",
@@ -181,10 +197,29 @@ class readcsv:
                                      "rc_delete_column",
                                      "rc_insert_row",
                                      "rc_delete_row"))
+
+        self.sheet.popup_menu_add_command("Hide This Column", self.hide_column, table_menu=False, index_menu=False, header_menu=True)
+        self.sheet.popup_menu_add_command("UnHide This Column", self.unhide_column, table_menu=False, index_menu=False, header_menu=True)
+
         self.frame.grid(row=0, column=0, sticky="nswe")
-        self.sheet.grid(row=0, column=0, sticky="nswe", padx=10)
+        self.sheet.grid(row=0, column=0, sticky="nswe")
         if tl == 0:
-            self.sg.grid(row=1, column=1, sticky='se')
+            self.separatort.grid(row=0, column=0, columnspan=3, padx=(7, 0), pady=(7, 0), sticky="ew")
+            self.separatorl.grid(row=1, column=0, sticky="ns", padx=(7, 0))
+            self.sheet.grid(row=1, column=1, sticky="nswe")
+            self.separatorr.grid(row=1, column=2, sticky="ns")
+            self.separatorb.grid(row=2, column=0, columnspan=3, padx=(7, 0), sticky="ew")
+            self.frame.grid(padx=5, pady=5)
+            self.sg.grid(row=3, column=3, sticky='se')
+
+    def hide_column(self, event=None):
+        show_columns = [*range(0, self.sheet.total_columns(), 1)]
+        show_columns.remove(self.sheet.get_currently_selected(get_coords=True)[1])
+        self.sheet.display_columns(indexes=show_columns, enable=True, refresh=True)
+
+    def unhide_column(self, event=None):
+        show_columns = [*range(0, self.sheet.total_columns(), 1)]
+        self.sheet.display_columns(indexes=show_columns, enable =True, refresh=True)
 
 
 class Post_process:
