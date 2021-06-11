@@ -16,7 +16,7 @@ if os.path.isfile('SEPgui.settings'):
         data = json.load(jsonfile)
         jsonfile.close()
 else:
-    data = json.loads('{"directory": "", "file": "", "output": ""}')
+    data = json.loads('{"theme": "vista", "directory": "", "file": "", "output": ""}')
 
 
 class ViewLogs:
@@ -200,9 +200,11 @@ class readcsv:
 
         self.sheet.popup_menu_add_command("Hide This Column", self.hide_column, table_menu=False, index_menu=False, header_menu=True)
         self.sheet.popup_menu_add_command("UnHide This Column", self.unhide_column, table_menu=False, index_menu=False, header_menu=True)
+        self.sheet.bind("<Double-Button-1>", self.view_cell)
 
         self.frame.grid(row=0, column=0, sticky="nswe")
         self.sheet.grid(row=0, column=0, sticky="nswe")
+
         if tl == 0:
             self.separatort.grid(row=0, column=0, columnspan=3, padx=(7, 0), pady=(7, 0), sticky="ew")
             self.separatorl.grid(row=1, column=0, sticky="ns", padx=(7, 0))
@@ -213,13 +215,35 @@ class readcsv:
             self.sg.grid(row=3, column=3, sticky='se')
 
     def hide_column(self, event=None):
-        show_columns = [*range(0, self.sheet.total_columns(), 1)]
-        show_columns.remove(self.sheet.get_currently_selected(get_coords=True)[1])
-        self.sheet.display_columns(indexes=show_columns, enable=True, refresh=True)
+        currently_displayed = self.sheet.display_columns()
+        exclude = set(currently_displayed[c] for c in self.sheet.get_selected_columns())
+        indexes = [c for c in currently_displayed if c not in exclude]
+        self.sheet.display_columns(indexes=indexes, enable=True, refresh=True)
 
     def unhide_column(self, event=None):
         show_columns = [*range(0, self.sheet.total_columns(), 1)]
-        self.sheet.display_columns(indexes=show_columns, enable =True, refresh=True)
+        self.sheet.display_columns(indexes=show_columns, enable=True, refresh=True)
+
+    def view_cell(self, event=None):
+        region = self.sheet.identify_region(event)
+        if region == "table":
+            r, c = self.sheet.get_currently_selected()
+            text = self.sheet.get_cell_data(r, c)
+            cell_contents(self.master, text)
+
+
+class cell_contents:
+    def __init__(self, root, text):
+        self.root = tk.Toplevel(root)
+        self.text = text
+        self.root.title('Cell contents')
+        s = ttk.Scrollbar(self.root)
+        t = tk.Text(self.root, yscrollcommand=s.set)
+        s.config(command=t.yview)
+        t.grid(row=0, column=0, sticky="nsew")
+        s.grid(row=0, column=1, sticky="nsew")
+        t.insert(tk.END, self.text)
+        t.config(state=tk.DISABLED)
 
 
 class Post_process:
@@ -874,6 +898,7 @@ class quit:
         self.no.grid(row=1, column=1, padx=(0, 5), pady=5)
 
     def btn1(self, root):
+        data['theme'] = ttk.Style().theme_use()
         with open("SEPgui.settings", "w") as jsonfile:
             json.dump(data, jsonfile)
         root.destroy()
@@ -889,12 +914,11 @@ def main():
     def menu_theme():
         s = ttk.Style()
         bg = s.lookup('TFrame', 'background')
-        fg = s.lookup('TFrame', 'foreground')
-        print(bg, fg)
         menubar.config(background=bg)
         tool_menu.config(bg=bg)
 
     root = ThemedTk()
+    ttk.Style().theme_use(data['theme'])
     root.title('SEPparser GUI')
     root.minsize(745, 400)
     root.protocol("WM_DELETE_WINDOW", lambda: quit(root))
