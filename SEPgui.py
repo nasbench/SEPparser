@@ -569,13 +569,29 @@ class Pre_process:
 
         self.outputtext2.tag_configure(b'\x1b[1;31m', foreground="red")
         self.outputtext2.tag_configure(b'\x1b[1;32m', foreground="green")
+        self.outputtext2.tag_configure(b'\x1b[1;92m', foreground="green",
+                                       font=('Consolas', 12, 'bold'))
         self.outputtext2.tag_configure(b'\x1b[1;33m', foreground="yellow")
         self.outputtext2.tag_configure(b'\x1b[1;93m', foreground="yellow",
                                        font=('Consolas', 12, 'bold'))
-        self.outputtext2.tag_configure(b'\x1b[1;92m', foreground="green",
-                                       font=('Consolas', 12, 'bold'))
+        self.outputtext2.tag_configure(b'\x1b[1;34m', foreground="blue")
         self.outputtext2.tag_configure(b'\x1b[1;35m', foreground="purple")
         self.outputtext2.tag_configure(b'\x1b[1;36m', foreground="cyan")
+        self.outputtext2.tag_configure(b'\x1b[1;37m', foreground="white")
+        self.outputtext2.tag_configure(b'\x1b[1;41m\x1b[1;37m', background='#C50F1F')
+        self.outputtext2.tag_configure(b'\x1b[1;42m\x1b[1;37m', background='#13A10E')
+        self.outputtext2.tag_configure(b'\x1b[1;43m\x1b[1;37m', background='#C19C00')
+        self.outputtext2.tag_configure(b'\x1b[1;44m\x1b[1;37m', background='#0037DA')
+        self.outputtext2.tag_configure(b'\x1b[1;45m\x1b[1;37m', background='#881798')
+        self.outputtext2.tag_configure(b'\x1b[1;46m\x1b[1;37m', background='#3A96DD')
+        self.outputtext2.tag_configure(b'\x1b[1;47m\x1b[1;30m', background='#CCCCCC', foreground='#767693')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;41m\x1b[1;37m', background='#C50F1F')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;42m\x1b[1;37m', background='#13A10E')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;43m\x1b[1;37m', background='#C19C00')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;44m\x1b[1;37m', background='#0037DA')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;45m\x1b[1;37m', background='#881798')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;46m\x1b[1;37m', background='#3A96DD')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;47m\x1b[1;30m', background='#CCCCCC', foreground='#767693')
 
         self.scrollb.config(command=self.outputtext2.yview)
 
@@ -800,27 +816,31 @@ class Pre_process:
         self.outputtext2.delete('1.0', tk.END)
         cmdlist = "py.exe -3 -u SEPparser.py " + self.cmd.get()
         proc = subprocess.Popen(cmdlist, stdout=subprocess.PIPE)
-        ansi_escape = re.compile(b'(\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~]))')
+        ansi_escape = re.compile(b'((?:\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])){3}|(?:\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])){2}|(?:\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])))')
         while True:
             line = ansi_escape.split(proc.stdout.readline())
-            line = [x for x in line if b'' != x]
             s = len(line)
+
             if s == 1:
-                self.outputtext2.insert(tk.END, "\r\n")
+                if line[0] == b'':
+                    break
+
+                self.outputtext2.insert(tk.END, line[0])
                 self.outputtext2.see(tk.END)
-#                self.outputtext2.update_idletasks()
                 continue
 
             if s % 2 != 0:
                 s = s - 1
 
-            for i in range(0, s, 2):
+            self.outputtext2.insert(tk.END, line[0])
+            self.outputtext2.see(tk.END)
+
+            for i in range(1, s, 2):
                 tag = line[i]
                 w = line[i+1]
 
                 self.outputtext2.insert(tk.END, w, tag)
                 self.outputtext2.see(tk.END)
-#                self.outputtext2.update_idletasks()
 
             if not line:
                 break
