@@ -351,13 +351,9 @@ class Pre_process:
         self.cright_frame = ttk.LabelFrame(self.center_frame, text="SEPparser Output", padding=5)
         self.bottom_frame = ttk.Frame(self.main_frame)
         self.inner_frame = ttk.LabelFrame(self.bottom_frame, text="Current command line")
+
         self.outer_frame.grid(row=0, column=0, sticky="nsew")
         self.main_frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
-        self.outer_frame.grid_rowconfigure(0, weight=1)
-        self.outer_frame.grid_columnconfigure(0, weight=1)
-        self.main_frame.grid_rowconfigure(0, weight=1)
-        self.main_frame.grid_columnconfigure(0, weight=1)
-
         self.top_frame.grid(row=0, column=0, sticky="ew")
         self.top_inner.grid(row=0, column=0, sticky="ew", padx=15, pady=(15, 0))
         self.tleft_frame.grid(row=0, column=0, sticky="ew")
@@ -368,13 +364,18 @@ class Pre_process:
         self.bottom_frame.grid(row=2, column=0, sticky="ew")
         self.inner_frame.grid(row=0, column=0, sticky="ew", padx=15, pady=(0, 15))
 
+        self.outer_frame.grid_rowconfigure(0, weight=1)
+        self.outer_frame.grid_columnconfigure(0, weight=1)
+        self.main_frame.grid_rowconfigure(1, weight=1)
+        self.main_frame.grid_columnconfigure(0, weight=1)
+        self.top_frame.grid_columnconfigure(0, weight=1)
+        self.top_inner.grid_columnconfigure(0, weight=1)
+        self.top_inner.grid_columnconfigure(1, weight=1)
         self.center_frame.grid_rowconfigure(0, weight=1)
         self.center_frame.grid_columnconfigure(1, weight=1)
         self.cright_frame.grid_rowconfigure(0, weight=1)
         self.cright_frame.grid_columnconfigure(0, weight=1)
-        self.bottom_frame.grid_rowconfigure(0, weight=1)
         self.bottom_frame.grid_columnconfigure(0, weight=1)
-        self.inner_frame.grid_rowconfigure(0, weight=1)
         self.inner_frame.grid_columnconfigure(0, weight=1)
 
         self.v = tk.StringVar(value="-d")
@@ -574,7 +575,7 @@ class Pre_process:
         self.outputtext2.tag_configure(b'\x1b[1;33m', foreground="yellow")
         self.outputtext2.tag_configure(b'\x1b[1;93m', foreground="yellow",
                                        font=('Consolas', 12, 'bold'))
-        self.outputtext2.tag_configure(b'\x1b[1;34m', foreground="blue")
+        self.outputtext2.tag_configure(b'\x1b[1;34m', foreground='#3B78FF')
         self.outputtext2.tag_configure(b'\x1b[1;35m', foreground="purple")
         self.outputtext2.tag_configure(b'\x1b[1;36m', foreground="cyan")
         self.outputtext2.tag_configure(b'\x1b[1;37m', foreground="white")
@@ -940,7 +941,7 @@ def main():
     root = ThemedTk()
     ttk.Style().theme_use(data['theme'])
     root.title('SEPparser GUI')
-    root.minsize(745, 400)
+#    root.minsize(745, 400)
     root.protocol("WM_DELETE_WINDOW", lambda: quit(root))
 
     root.grid_rowconfigure(0, weight=1)
