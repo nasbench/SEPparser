@@ -16,7 +16,7 @@ if os.path.isfile('SEPgui.settings'):
         data = json.load(jsonfile)
         jsonfile.close()
 else:
-    data = json.loads('{"theme": "vista", "directory": "", "file": "", "output": ""}')
+    data = json.loads('{"theme": "vista", "directory": "", "file": "", "output": "", "registrationInfo": ""}')
 
 
 class ViewLogs:
@@ -403,12 +403,14 @@ class Pre_process:
                                      text="Directory",
                                      variable=self.v,
                                      value="-d",
+                                     takefocus=False,
                                      command=self.check_expression)
 
         self.rbtn2 = ttk.Radiobutton(self.tleft_frame,
                                      text="File",
                                      variable=self.v,
                                      value="-f",
+                                     takefocus=False,
                                      command=self.check_expression)
 
         self.ent1 = ttk.Combobox(self.tleft_frame,
@@ -420,6 +422,7 @@ class Pre_process:
         self.btn1 = ttk.Button(self.tleft_frame,
                                text='...',
                                width=3,
+                               takefocus=False,
                                command=lambda: self.callback())
 
         self.cbx1 = ttk.Checkbutton(self.tleft_frame,
@@ -427,6 +430,7 @@ class Pre_process:
                                     offvalue="",
                                     onvalue="-k",
                                     var=self.kapemode,
+                                    takefocus=False,
                                     command=self.check_expression)
 
         self.cbx2 = ttk.Checkbutton(self.tright_frame,
@@ -434,6 +438,7 @@ class Pre_process:
                                     offvalue="",
                                     onvalue="-o",
                                     var=self.output,
+                                    takefocus=False,
                                     command=lambda: [self.check_expression(),
                                                      self.outcheck()])
 
@@ -448,6 +453,7 @@ class Pre_process:
                                text='...',
                                width=3,
                                state='disabled',
+                               takefocus=False,
                                command=lambda: self.callback2())
 
         self.cbx3 = ttk.Checkbutton(self.tright_frame,
@@ -455,6 +461,7 @@ class Pre_process:
                                     offvalue="",
                                     onvalue="-a",
                                     var=self.append,
+                                    takefocus=False,
                                     command=self.check_expression)
 
         self.lbl1 = ttk.Label(self.cleft_frame,
@@ -474,9 +481,10 @@ class Pre_process:
                                      variable=self.tz,
                                      value="-tz",
                                      state='disabled',
+                                     takefocus=False,
                                      command=self.check_expression)
 
-        self.ent3 = ttk.Entry(self.cleft_frame,
+        self.ent3 = ttk.Combobox(self.cleft_frame,
                               width=25,
                               state='disabled',
                               textvariable=self.tzdata)
@@ -485,6 +493,7 @@ class Pre_process:
                               text='...',
                               width=3,
                               state='disabled',
+                              takefocus=False,
                               command=lambda: self.callback3())
 
         self.rbtn4 = ttk.Radiobutton(self.cleft_frame,
@@ -492,6 +501,7 @@ class Pre_process:
                                      variable=self.tz,
                                      value="-r",
                                      state='disabled',
+                                     takefocus=False,
                                      command=self.check_expression)
 
         self.lbl2 = ttk.Label(self.cleft_frame,
@@ -504,6 +514,7 @@ class Pre_process:
                                     offvalue="",
                                     onvalue="-l",
                                     var=self.logging,
+                                    takefocus=False,
                                     command=self.check_expression)
 
         self.cbx6 = ttk.Checkbutton(self.cleft_frame,
@@ -511,6 +522,7 @@ class Pre_process:
                                     offvalue="",
                                     onvalue="-v",
                                     var=self.verbose,
+                                    takefocus=False,
                                     command=self.check_expression)
 
         self.lbl3 = ttk.Label(self.cleft_frame,
@@ -523,6 +535,7 @@ class Pre_process:
                                     offvalue="",
                                     onvalue="-e",
                                     var=self.e,
+                                    takefocus=False,
                                     command=self.check_expression)
 
         self.cbx8 = ttk.Checkbutton(self.cleft_frame,
@@ -530,6 +543,7 @@ class Pre_process:
                                     offvalue="",
                                     onvalue="-qd",
                                     var=self.qd,
+                                    takefocus=False,
                                     command=self.check_expression)
 
         self.cbx9 = ttk.Checkbutton(self.cleft_frame,
@@ -538,6 +552,7 @@ class Pre_process:
                                     onvalue="-hd",
                                     state='disabled',
                                     var=self.hd,
+                                    takefocus=False,
                                     command=self.check_expression)
 
         self.cbx10 = ttk.Checkbutton(self.cleft_frame,
@@ -545,6 +560,7 @@ class Pre_process:
                                      offvalue="",
                                      onvalue="-hf",
                                      var=self.hf,
+                                     takefocus=False,
                                      command=self.check_expression)
 
         self.lbl4 = ttk.Label(self.cleft_frame,
@@ -557,6 +573,7 @@ class Pre_process:
                                      offvalue="",
                                      onvalue="-eb",
                                      var=self.eb,
+                                     takefocus=False,
                                      command=self.check_expression)
 
         self.scrollb = ttk.Scrollbar(self.cright_frame)
@@ -611,6 +628,7 @@ class Pre_process:
         self.button = ttk.Button(self.top_inner,
                                  text="View Reports",
                                  width=12,
+                                 takefocus=False,
 #                                 state='disabled',
                                  command=lambda: Post_process(root,
                                                               self.outpath.get()))
@@ -618,11 +636,13 @@ class Pre_process:
         self.button2 = ttk.Button(self.inner_frame,
                                   text="Execute",
                                   width=7,
-                                  command=lambda: [threading.Thread(target=self.execute).start(), self.updtent2(), self.updtent1()])
+                                  takefocus=False,
+                                  command=lambda: [threading.Thread(target=self.execute).start(), self.updtent1(), self.updtent2(), self.updtent3()])
 
         self.button3 = ttk.Button(self.inner_frame,
                                   text="Copy Command",
                                   width=15,
+                                  takefocus=False,
                                   command=lambda: self.copy_command())
 
         self.sg = ttk.Sizegrip(self.main_frame)
@@ -738,10 +758,12 @@ class Pre_process:
             opt += f' "{self.outpath.get()}"'
         if len(self.tz.get()) > 1:
             opt += f' {self.tz.get()}'
-            if self.tz.get() == '-r':
-                self.btn.configure(state='normal')
-            else:
+            if self.tz.get() == '-tz':
                 self.btn.configure(state='disable')
+                self.ent3['values'] = list(range(-12, 13))
+            else:
+                self.btn.configure(state='normal')
+                self.ent3['values'] = sorted(data['registrationInfo'].split('|'))
         if len(self.tzdata.get()) > 0:
             opt += f' {self.tzdata.get()}'
         self.outputtext.delete(1.0, tk.END)  # clear the outputtext text widget
@@ -792,10 +814,12 @@ class Pre_process:
             self.rbtn3.configure(state='normal')
             self.rbtn4.configure(state='normal')
             self.ent3.configure(state='normal')
+            self.tz.set('-tz')
         else:
             self.rbtn3.configure(state='disable')
             self.rbtn4.configure(state='disable')
             self.ent3.configure(state='disable')
+            self.btn.configure(state='disable')
             self.tz.set(' ')
             self.tzdata.set(' ')
         self.check_expression()
@@ -872,13 +896,7 @@ class Pre_process:
 
     def copy_command(self):
         cmd = self.outputtext.get('1.0', tk.END)
-        print(cmd)
         self.root.clipboard_append(cmd[:-1])
-
-    def updtent2(self):
-        if self.outpath.get() not in data['output'].split('|'):
-            data['output'] = f"{self.outpath.get()}|{data['output']}"
-            self.ent2['values'] = sorted(data['output'].split('|'))
 
     def updtent1(self):
         if self.v.get() == "-d":
@@ -889,6 +907,16 @@ class Pre_process:
             if self.path.get() not in data['file'].split('|'):
                 data['file'] = f"{self.path.get()}|{data['file']}"
                 self.ent1['values'] = sorted(data['file'].split('|'))
+
+    def updtent2(self):
+        if self.outpath.get() not in data['output'].split('|'):
+            data['output'] = f"{self.outpath.get()}|{data['output']}"
+            self.ent2['values'] = sorted(data['output'].split('|'))
+
+    def updtent3(self):
+        if self.tz.get() == "-r":
+            if self.tzdata.get() not in data['registrationInfo'].split('|'):
+                data['registrationInfo'] = f"{self.tzdata.get()}|{data['registrationInfo']}"
 
 
 class quit:
@@ -915,7 +943,7 @@ class quit:
         self.no = ttk.Button(self.inner_frame, text="No", command=self.btn2)
 
         self.label.grid(row=0, column=0, columnspan=2)
-        self.yes.grid(row=1, column=0, padx=(5, 0), pady=5)
+        self.yes.grid(row=1, column=0, padx=5, pady=5)
         self.no.grid(row=1, column=1, padx=(0, 5), pady=5)
 
     def btn1(self, root):
@@ -941,6 +969,7 @@ def main():
     root = ThemedTk()
     ttk.Style().theme_use(data['theme'])
     root.title('SEPparser GUI')
+#    root.tk.call('tk', 'scaling', 1)
 #    root.minsize(745, 400)
     root.protocol("WM_DELETE_WINDOW", lambda: quit(root))
 
