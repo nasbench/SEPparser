@@ -18,6 +18,8 @@ if os.path.isfile('SEPgui.settings'):
 else:
     data = json.loads('{"theme": "vista", "directory": "", "file": "", "output": "", "registrationInfo": ""}')
 
+settings = json.loads('{"v": "-d", "kapemode": "", "output": "", "path": "c:/", "outpath": "", "append": "", "tvalue": 0, "tz": " ", "tzdata": "", "logging": "", "verbose": "", "e": "", "qd": "", "hd": "", "hf": "", "eb": "", "cmd": ""}')
+
 
 class ViewLogs:
     def __init__(self, btm_right, outpath):
@@ -277,7 +279,7 @@ class Post_process:
         self.btm_frame.grid_columnconfigure(1, weight=1)
 
         self.btm_left = ttk.Frame(self.btm_frame)
-        self.btm_right = ttk.Frame(self.btm_frame, padding=10)
+        self.btm_right = ttk.Frame(self.btm_frame, width=550, height=200, padding=10)
 
         self.btm_left.grid(row=0, column=0, sticky="ns")
         self.btm_right.grid(row=0, column=1, sticky="nsew", pady=(0, 10))
@@ -286,7 +288,8 @@ class Post_process:
         self.btm_left.grid_rowconfigure(1, weight=0)
         self.btm_left.grid_rowconfigure(2, weight=0)
         self.btm_left.grid_rowconfigure(3, weight=0)
-        self.btm_left.grid_rowconfigure(4, weight=1)
+        self.btm_left.grid_rowconfigure(4, weight=0)
+        self.btm_left.grid_rowconfigure(5, weight=1)
         self.btm_left.grid_columnconfigure(1, weight=1)
 
         self.label = ttk.Label(self.top_frame, text="")
@@ -313,6 +316,10 @@ class Post_process:
                                text="View Logs",
                                command=lambda: [ViewLogs(self.btm_right, self.outpath), self.onclick(self.btn4['text'])])
 
+        self.btn5 = ttk.Button(self.btm_left,
+                               text="Back",
+                               command=lambda: Pre_process(root))
+
         self.sg = ttk.Sizegrip(self.main_frame)
 
         self.label.grid(row=0, column=1, sticky="sw", padx=5)
@@ -321,10 +328,11 @@ class Post_process:
         self.btn2.grid(row=1, column=0, sticky="ew", padx=(0, 5), pady=1)
         self.btn3.grid(row=2, column=0, sticky="ew", padx=(0, 5), pady=1)
         self.btn4.grid(row=3, column=0, sticky="ew", padx=(0, 5), pady=1)
-        self.separatorx.grid(row=0, column=1, rowspan=5, sticky="ns")
+        self.btn5.grid(row=4, column=0, sticky="ew", padx=(0, 5), pady=1)
+        self.separatorx.grid(row=0, column=1, rowspan=6, sticky="ns")
         self.sg.grid(row=1, sticky='se')
 
-        self.btn4.bind('<<ThemeChanged>>', self.row_width)
+        self.btn5.bind('<<ThemeChanged>>', self.row_width)
         self.row_width()
 
     def row_width(self, *args):
@@ -378,46 +386,44 @@ class Pre_process:
         self.bottom_frame.grid_columnconfigure(0, weight=1)
         self.inner_frame.grid_columnconfigure(0, weight=1)
 
-        self.v = tk.StringVar(value="-d")
-        self.kapemode = tk.StringVar(value="")
-        self.output = tk.StringVar(value="")
-        self.path = tk.StringVar(value="c:/")
+        self.v = tk.StringVar(value=settings['v'])
+        self.kapemode = tk.StringVar(value=settings['kapemode'])
+        self.output = tk.StringVar(value=settings['output'])
+        self.path = tk.StringVar(value=settings['path'])
         self.path.trace_add('write', self.check_expression)
-        self.outpath = tk.StringVar(value="")
+        self.outpath = tk.StringVar(value=settings['outpath'])
         self.outpath.trace_add('write', self.check_expression)
-        self.append = tk.StringVar(value="")
-        self.tvalue = tk.IntVar()
-        self.tz = tk.StringVar(value=' ')
-        self.tzdata = tk.StringVar()
+        self.append = tk.StringVar(value=settings['append'])
+        self.tvalue = tk.IntVar(value=settings['tvalue'])
+        self.tz = tk.StringVar(value=settings['tz'])
+        self.tzdata = tk.StringVar(value=settings['tzdata'])
         self.tzdata.trace_add('write', self.check_expression)
-        self.logging = tk.StringVar()
-        self.verbose = tk.StringVar()
-        self.e = tk.StringVar()
-        self.qd = tk.StringVar()
-        self.hd = tk.StringVar()
-        self.hf = tk.StringVar()
-        self.eb = tk.StringVar()
-        self.cmd = tk.StringVar()
+        self.logging = tk.StringVar(value=settings['logging'])
+        self.verbose = tk.StringVar(value=settings['verbose'])
+        self.e = tk.StringVar(value=settings['e'])
+        self.qd = tk.StringVar(value=settings['qd'])
+        self.hd = tk.StringVar(value=settings['hd'])
+        self.hf = tk.StringVar(value=settings['hf'])
+        self.eb = tk.StringVar(value=settings['eb'])
+        self.cmd = tk.StringVar(value=settings['cmd'])
 
         self.rbtn1 = ttk.Radiobutton(self.tleft_frame,
                                      text="Directory",
                                      variable=self.v,
                                      value="-d",
                                      takefocus=False,
-                                     command=self.check_expression)
+                                     command=lambda: [self.path.set("c:/"), self.check_expression])
 
         self.rbtn2 = ttk.Radiobutton(self.tleft_frame,
                                      text="File",
                                      variable=self.v,
                                      value="-f",
                                      takefocus=False,
-                                     command=self.check_expression)
+                                     command=lambda: [self.path.set("c:/"), self.check_expression])
 
         self.ent1 = ttk.Combobox(self.tleft_frame,
                                  width=38,
                                  textvariable=self.path)
-
-#        self.ent1['values'] = sorted(data['directory'].split('|'))
 
         self.btn1 = ttk.Button(self.tleft_frame,
                                text='...',
@@ -439,8 +445,7 @@ class Pre_process:
                                     onvalue="-o",
                                     var=self.output,
                                     takefocus=False,
-                                    command=lambda: [self.check_expression(),
-                                                     self.outcheck()])
+                                    command=lambda: [self.outpath.set('.'), self.check_expression()])
 
         self.ent2 = ttk.Combobox(self.tright_frame,
                                  width=38,
@@ -482,12 +487,12 @@ class Pre_process:
                                      value="-tz",
                                      state='disabled',
                                      takefocus=False,
-                                     command=self.check_expression)
+                                     command=lambda: [self.tzdata.set(''), self.check_expression])
 
         self.ent3 = ttk.Combobox(self.cleft_frame,
-                              width=25,
-                              state='disabled',
-                              textvariable=self.tzdata)
+                                 width=25,
+                                 state='disabled',
+                                 textvariable=self.tzdata)
 
         self.btn = ttk.Button(self.cleft_frame,
                               text='...',
@@ -502,7 +507,7 @@ class Pre_process:
                                      value="-r",
                                      state='disabled',
                                      takefocus=False,
-                                     command=self.check_expression)
+                                     command=lambda: [self.tzdata.set(''), self.check_expression])
 
         self.lbl2 = ttk.Label(self.cleft_frame,
                               text=" Logging",
@@ -534,9 +539,10 @@ class Pre_process:
                                     text="Extract",
                                     offvalue="",
                                     onvalue="-e",
+                                    state='disabled',
                                     var=self.e,
                                     takefocus=False,
-                                    command=self.check_expression)
+                                    command=lambda: [self.hd.set(""), self.check_expression()])
 
         self.cbx8 = ttk.Checkbutton(self.cleft_frame,
                                     text="Quarantine Dump",
@@ -553,7 +559,7 @@ class Pre_process:
                                     state='disabled',
                                     var=self.hd,
                                     takefocus=False,
-                                    command=self.check_expression)
+                                    command=lambda: [self.e.set(""), self.check_expression()])
 
         self.cbx10 = ttk.Checkbutton(self.cleft_frame,
                                      text="Hash File",
@@ -630,14 +636,13 @@ class Pre_process:
                                  width=12,
                                  takefocus=False,
 #                                 state='disabled',
-                                 command=lambda: Post_process(root,
-                                                              self.outpath.get()))
+                                 command=lambda: [self.updtsettings(), Post_process(root, self.outpath.get())])
 
         self.button2 = ttk.Button(self.inner_frame,
                                   text="Execute",
                                   width=7,
                                   takefocus=False,
-                                  command=lambda: [threading.Thread(target=self.execute).start(), self.updtent1(), self.updtent2(), self.updtent3()])
+                                  command=lambda: [threading.Thread(target=self.execute).start(), self.updtents()])
 
         self.button3 = ttk.Button(self.inner_frame,
                                   text="Copy Command",
@@ -687,13 +692,25 @@ class Pre_process:
 
         if varContent == "-d":
             self.ent1['values'] = sorted(data['directory'].split('|'))
+            self.cbx7.configure(state='disable')
             self.cbx9.configure(state='disable')
             self.hd.set("")
+            self.e.set("")
         else:
             self.ent1['values'] = sorted(data['file'].split('|'))
+            self.cbx7.configure(state='normal')
             self.cbx9.configure(state='normal')
 
         pathContent = self.path.get()
+
+        if self.output.get() == "-o":
+            self.ent2.configure(state='normal')
+            self.btn2.configure(state='normal')
+        else:
+            self.ent2.configure(state='disable')
+            self.btn2.configure(state='disable')
+            self.outpath.set('')
+
         # Optional arguments
         opt = ''
         if len(self.kapemode.get()) > 1:
@@ -706,13 +723,12 @@ class Pre_process:
             opt += f' {self.verbose.get()}'
         if len(self.hd.get()) > 1:
             opt += f' {self.hd.get()}'
-        if self.hd.get() == "-hd":
+        if self.hd.get() == "-hd" or self.e.get() == "-e":
             self.cbx1.configure(state='disable')
             self.cbx2.configure(state='disable')
             self.cbx3.configure(state='disable')
             self.lbl1.configure(state='disable')
             self.cbx4.configure(state='disable')
-            self.cbx7.configure(state='disable')
             self.cbx8.configure(state='disable')
             self.cbx10.configure(state='disable')
             self.lbl4.configure(state='disable')
@@ -724,7 +740,6 @@ class Pre_process:
             self.ent3.configure(state='disable')
             self.kapemode.set("")
             self.append.set("")
-            self.e.set("")
             self.qd.set("")
             self.hf.set("")
             self.eb.set("")
@@ -739,7 +754,6 @@ class Pre_process:
             self.cbx3.configure(state='normal')
             self.lbl1.configure(state='normal')
             self.cbx4.configure(state='normal')
-            self.cbx7.configure(state='normal')
             self.cbx8.configure(state='normal')
             self.cbx10.configure(state='normal')
             self.cbx11.configure(state='normal')
@@ -793,20 +807,10 @@ class Pre_process:
     def callback3(self):
         _ = filedialog.askopenfilename(initialdir='C:/',
                                        title='Select File',
-                                       initialfile='registrationInfo.xml',
+                                       initialfile='registrationInfo',
+                                       defaultextension='xml',
                                        filetypes=[("Text files", "*.xml")])
         self.tzdata.set(_)
-        self.check_expression()
-
-    def outcheck(self):
-        if self.output.get() == "-o":
-            self.ent2.configure(state='normal')
-            self.btn2.configure(state='normal')
-            self.outpath.set('.')
-        else:
-            self.ent2.configure(state='disable')
-            self.btn2.configure(state='disable')
-            self.outpath.set('')
         self.check_expression()
 
     def tcheck(self):
@@ -898,7 +902,7 @@ class Pre_process:
         cmd = self.outputtext.get('1.0', tk.END)
         self.root.clipboard_append(cmd[:-1])
 
-    def updtent1(self):
+    def updtents(self):
         if self.v.get() == "-d":
             if self.path.get() not in data['directory'].split('|'):
                 data['directory'] = f"{self.path.get()}|{data['directory']}"
@@ -908,15 +912,39 @@ class Pre_process:
                 data['file'] = f"{self.path.get()}|{data['file']}"
                 self.ent1['values'] = sorted(data['file'].split('|'))
 
-    def updtent2(self):
         if self.outpath.get() not in data['output'].split('|'):
             data['output'] = f"{self.outpath.get()}|{data['output']}"
             self.ent2['values'] = sorted(data['output'].split('|'))
 
-    def updtent3(self):
         if self.tz.get() == "-r":
             if self.tzdata.get() not in data['registrationInfo'].split('|'):
                 data['registrationInfo'] = f"{self.tzdata.get()}|{data['registrationInfo']}"
+
+    def updtsettings(self):
+        settings['v'] = f"{self.v.get()}"
+        settings['kapemode'] = f"{self.kapemode.get()}"
+        settings['output'] = f"{self.output.get()}"
+        settings['path'] = f"{self.path.get()}"
+        settings['outpath'] = f"{self.outpath.get()}"
+        settings['append'] = f"{self.append.get()}"
+        settings['tvalue'] = f"{self.tvalue.get()}"
+        settings['tz'] = f"{self.tz.get()}"
+        settings['tzdata'] = f"{self.tzdata.get()}"
+        settings['logging'] = f"{self.logging.get()}"
+        settings['verbose'] = f"{self.verbose.get()}"
+        settings['e'] = f"{self.e.get()}"
+        settings['qd'] = f"{self.qd.get()}"
+        settings['hd'] = f"{self.hd.get()}"
+        settings['hf'] = f"{self.hf.get()}"
+        settings['eb'] = f"{self.eb.get()}"
+        settings['cmd'] = f"{self.cmd.get()}"
+
+#    def on_combo_configure(event):
+#        font = tkFont.nametofont(str(event.widget.cget('font')))
+#        width = font.measure(fruit[0] + "0") - event.width
+#        res = len(max(test_list, key = len))
+#        style = ttk.Style()
+#        style.configure('TCombobox', postoffset=(0, 0, width, 0))
 
 
 class quit:
