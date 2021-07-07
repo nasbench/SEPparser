@@ -10,6 +10,7 @@ import tkinter.font as tkFont
 import subprocess
 import threading
 import pandas as pd
+import images
 
 if os.path.isfile('SEPgui.settings'):
     with open("SEPgui.settings", "r") as jsonfile:
@@ -19,6 +20,8 @@ else:
     data = json.loads('{"theme": "vista", "directory": "", "file": "", "output": "", "registrationInfo": ""}')
 
 settings = json.loads('{"v": "-d", "kapemode": "", "output": "", "path": "c:/", "outpath": "", "append": "", "tvalue": 0, "tz": " ", "tzdata": "", "logging": "", "verbose": "", "e": "", "qd": "", "hd": "", "hf": "", "eb": "", "cmd": ""}')
+
+project = ''
 
 
 class ViewLogs:
@@ -251,7 +254,10 @@ class cell_contents:
 class Post_process:
     def __init__(self, root, outpath):
         self.root = root
-        self.outpath = outpath
+        if len(outpath) == 0:
+            self.outpath = "."
+        else:
+            self.outpath = outpath
 
         for widgets in self.root.winfo_children():
             if str(widgets) == ".!menu":
@@ -775,11 +781,13 @@ class Pre_process:
             if self.tz.get() == '-tz':
                 self.btn.configure(state='disable')
                 self.ent3['values'] = list(range(-12, 13))
+                if len(self.tzdata.get()) > 0:
+                    opt += f' {self.tzdata.get()}'
             else:
                 self.btn.configure(state='normal')
                 self.ent3['values'] = sorted(data['registrationInfo'].split('|'))
-        if len(self.tzdata.get()) > 0:
-            opt += f' {self.tzdata.get()}'
+                if len(self.tzdata.get()) > 0:
+                    opt += f' "{self.tzdata.get()}"'
         self.outputtext.delete(1.0, tk.END)  # clear the outputtext text widget
         self.outputtext.insert(tk.END, (f'SEPparser.exe {varContent} "{pathContent}"{opt}').replace('/', '\\'))
         self.outputtext.config(state=tk.DISABLED)
@@ -949,17 +957,15 @@ class Pre_process:
 
 class quit:
     def __init__(self, root):
-        self.win = tk.Toplevel(root)
+        self.root = root
+        self.win = tk.Toplevel(self.root)
         self.win.attributes("-toolwindow", 1)
+        self.win.attributes("-topmost", 1)
         self.win.title("Please confirm")
         self.win.grab_set()
+        self.win.focus_force()
+        self.win.resizable(False, False)
         self.win.protocol("WM_DELETE_WINDOW", self.__callback)
-
-        x = root.winfo_x()
-        y = root.winfo_y()
-        w = root.winfo_width()
-        h = root.winfo_height()
-        self.win.geometry("+%d+%d" % (x + w/2, y + h/2))
 
         self.frame = ttk.Frame(self.win)
         self.inner_frame = ttk.Frame(self.frame, relief='groove', padding=5)
@@ -974,6 +980,10 @@ class quit:
         self.yes.grid(row=1, column=0, padx=5, pady=5)
         self.no.grid(row=1, column=1, padx=(0, 5), pady=5)
 
+        self.sync_windows()
+
+        self.root.bind("<Configure>", self.sync_windows)
+
     def btn1(self, root):
         data['theme'] = ttk.Style().theme_use()
         with open("SEPgui.settings", "w") as jsonfile:
@@ -981,13 +991,81 @@ class quit:
         root.destroy()
 
     def btn2(self):
+        self.root.unbind("<Configure>")
         self.win.destroy()
 
     def __callback(self):
         return
 
+    def sync_windows(self, event=None):
+        x = self.root.winfo_x()
+        y = self.root.winfo_y()
+        w = self.root.winfo_width()
+        h = self.root.winfo_height()
+        self.win.geometry("+%d+%d" % (x + w/2, y + h/2))
+
+
+class about:
+    def __init__(self, root):
+        self.root = root
+        self.win = tk.Toplevel(self.root)
+        self.win.title("About SEPgui")
+        self.win.attributes("-toolwindow", 1)
+        self.win.attributes("-topmost", 1)
+        self.win.grab_set()
+        self.win.focus_force()
+        self.win.resizable(False, False)
+        self.win.protocol("WM_DELETE_WINDOW", self.btn)
+
+        logo = images.logo()
+
+        self.frame = ttk.Frame(self.win)
+        self.inner_frame = ttk.Frame(self.frame, relief='groove', padding=5)
+        self.frame.grid(row=0, column=0)
+        self.inner_frame.grid(row=0, column=0, padx=5, pady=5)
+
+        self.label = ttk.Label(self.inner_frame, image=logo, padding=5)
+        self.label.image = logo
+        self.label1 = ttk.Label(self.inner_frame, text="SEPgui", padding=5)
+        self.label2 = ttk.Label(self.inner_frame, text="Version <someversion>", padding=5)
+        self.label3 = ttk.Label(self.inner_frame, text="Powered by SEPparser", padding=5)
+        self.label4 = ttk.Label(self.inner_frame, text="Version 2021.05.03", padding=5)
+        self.ok = ttk.Button(self.inner_frame, text="OK", padding=5, command=self.btn)
+
+        self.label.grid(row=0, column=0, rowspan=4)
+        self.label1.grid(row=0, column=1, sticky="w")
+        self.label2.grid(row=1, column=1, sticky="w")
+        self.label3.grid(row=2, column=1, sticky="w")
+        self.label4.grid(row=3, column=1, sticky="w")
+        self.ok.grid(row=4, column=1, padx=5, pady=5, sticky="e")
+
+        self.sync_windows()
+
+        self.root.bind("<Configure>", self.sync_windows)
+
+    def btn(self):
+        self.root.unbind("<Configure>")
+        self.win.destroy()
+
+    def sync_windows(self, event=None):
+        x = self.root.winfo_x()
+        y = self.root.winfo_y()
+        w = self.root.winfo_width()
+        h = self.root.winfo_height()
+        self.win.geometry("+%d+%d" % (x + w/2, y + h/2))
+
+
+class save:
+    def __init__(self, root):
+        global project
+        if project == "":
+            filename = filedialog.asksaveasfilename(initialdir="/", title="Save")
+        project = "| Test"
+        root.title(f'SEPparser GUI {project}')
+
 
 def main():
+
     def menu_theme():
         s = ttk.Style()
         bg = s.lookup('TFrame', 'background')
@@ -1022,9 +1100,9 @@ def main():
     file_menu.add_separator()
     file_menu.add_command(label="Exit", command=lambda: quit(root))
     pro_menu.add_command(label="Load")
-    pro_menu.add_command(label="Save")
+    pro_menu.add_command(label="Save", command=lambda: save(root))
     pro_menu.add_command(label="Save As")
-    help_menu.add_command(label="About")
+    help_menu.add_command(label="About", command=lambda: about(root))
     tool_menu.add_cascade(label="Skins", menu=submenu)
     menubar.add_cascade(label="File", menu=file_menu)
     menubar.add_cascade(label="Tools", menu=tool_menu)
