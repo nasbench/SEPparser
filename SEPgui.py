@@ -203,8 +203,18 @@ class readcsv:
                                      "rc_insert_row",
                                      "rc_delete_row"))
 
-        self.sheet.popup_menu_add_command("Hide This Column", self.hide_column, table_menu=False, index_menu=False, header_menu=True)
-        self.sheet.popup_menu_add_command("UnHide This Column", self.unhide_column, table_menu=False, index_menu=False, header_menu=True)
+        self.sheet.popup_menu_add_command("Hide This Column",
+                                          self.hide_column,
+                                          table_menu=False,
+                                          index_menu=False,
+                                          header_menu=True)
+
+        self.sheet.popup_menu_add_command("UnHide This Column",
+                                          self.unhide_column,
+                                          table_menu=False,
+                                          index_menu=False,
+                                          header_menu=True)
+
         self.sheet.bind("<Double-Button-1>", self.view_cell)
 
         self.frame.grid(row=0, column=0, sticky="nswe")
@@ -324,7 +334,7 @@ class Post_process:
 
         self.btn5 = ttk.Button(self.btm_left,
                                text="Back",
-                               command=lambda: Pre_process(root))
+                               command=lambda: Pre_process(root, True))
 
         self.sg = ttk.Sizegrip(self.main_frame)
 
@@ -351,8 +361,9 @@ class Post_process:
 
 
 class Pre_process:
-    def __init__(self, root):
+    def __init__(self, root, state):
         self.root = root
+        self.state = state
 
         self.outer_frame = ttk.Frame(self.root)
         self.main_frame = ttk.Frame(self.outer_frame, relief='groove', padding=5)
@@ -599,29 +610,47 @@ class Pre_process:
 
         self.outputtext2.tag_configure(b'\x1b[1;31m', foreground="red")
         self.outputtext2.tag_configure(b'\x1b[1;32m', foreground="green")
-        self.outputtext2.tag_configure(b'\x1b[1;92m', foreground="green",
+        self.outputtext2.tag_configure(b'\x1b[1;92m',
+                                       foreground="green",
                                        font=('Consolas', 12, 'bold'))
         self.outputtext2.tag_configure(b'\x1b[1;33m', foreground="yellow")
-        self.outputtext2.tag_configure(b'\x1b[1;93m', foreground="yellow",
+        self.outputtext2.tag_configure(b'\x1b[1;93m',
+                                       foreground="yellow",
                                        font=('Consolas', 12, 'bold'))
         self.outputtext2.tag_configure(b'\x1b[1;34m', foreground='#3B78FF')
         self.outputtext2.tag_configure(b'\x1b[1;35m', foreground="purple")
         self.outputtext2.tag_configure(b'\x1b[1;36m', foreground="cyan")
         self.outputtext2.tag_configure(b'\x1b[1;37m', foreground="white")
-        self.outputtext2.tag_configure(b'\x1b[1;41m\x1b[1;37m', background='#C50F1F')
-        self.outputtext2.tag_configure(b'\x1b[1;42m\x1b[1;37m', background='#13A10E')
-        self.outputtext2.tag_configure(b'\x1b[1;43m\x1b[1;37m', background='#C19C00')
-        self.outputtext2.tag_configure(b'\x1b[1;44m\x1b[1;37m', background='#0037DA')
-        self.outputtext2.tag_configure(b'\x1b[1;45m\x1b[1;37m', background='#881798')
-        self.outputtext2.tag_configure(b'\x1b[1;46m\x1b[1;37m', background='#3A96DD')
-        self.outputtext2.tag_configure(b'\x1b[1;47m\x1b[1;30m', background='#CCCCCC', foreground='#767693')
-        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;41m\x1b[1;37m', background='#C50F1F')
-        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;42m\x1b[1;37m', background='#13A10E')
-        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;43m\x1b[1;37m', background='#C19C00')
-        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;44m\x1b[1;37m', background='#0037DA')
-        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;45m\x1b[1;37m', background='#881798')
-        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;46m\x1b[1;37m', background='#3A96DD')
-        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;47m\x1b[1;30m', background='#CCCCCC', foreground='#767693')
+        self.outputtext2.tag_configure(b'\x1b[1;41m\x1b[1;37m',
+                                       background='#C50F1F')
+        self.outputtext2.tag_configure(b'\x1b[1;42m\x1b[1;37m',
+                                       background='#13A10E')
+        self.outputtext2.tag_configure(b'\x1b[1;43m\x1b[1;37m',
+                                       background='#C19C00')
+        self.outputtext2.tag_configure(b'\x1b[1;44m\x1b[1;37m',
+                                       background='#0037DA')
+        self.outputtext2.tag_configure(b'\x1b[1;45m\x1b[1;37m',
+                                       background='#881798')
+        self.outputtext2.tag_configure(b'\x1b[1;46m\x1b[1;37m',
+                                       background='#3A96DD')
+        self.outputtext2.tag_configure(b'\x1b[1;47m\x1b[1;30m',
+                                       background='#CCCCCC',
+                                       foreground='#767693')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;41m\x1b[1;37m',
+                                       background='#C50F1F')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;42m\x1b[1;37m',
+                                       background='#13A10E')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;43m\x1b[1;37m',
+                                       background='#C19C00')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;44m\x1b[1;37m',
+                                       background='#0037DA')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;45m\x1b[1;37m',
+                                       background='#881798')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;46m\x1b[1;37m',
+                                       background='#3A96DD')
+        self.outputtext2.tag_configure(b'\x1b[1;0m\x1b[1;47m\x1b[1;30m',
+                                       background='#CCCCCC',
+                                       foreground='#767693')
 
         self.scrollb.config(command=self.outputtext2.yview)
 
@@ -641,8 +670,11 @@ class Pre_process:
                                  text="View Reports",
                                  width=12,
                                  takefocus=False,
-#                                 state='disabled',
-                                 command=lambda: [self.updtsettings(), Post_process(root, self.outpath.get())])
+                                 state='disabled',
+                                 command=lambda: Post_process(root, self.outpath.get()))
+
+        if self.state is True:
+            self.button.configure(state='normal')
 
         self.button2 = ttk.Button(self.inner_frame,
                                   text="Execute",
@@ -694,6 +726,7 @@ class Pre_process:
 
     def check_expression(self, *args):
         self.outputtext.config(state=tk.NORMAL)
+        self.updtsettings()
         varContent = self.v.get()
 
         if varContent == "-d":
@@ -845,7 +878,7 @@ class Pre_process:
         for widgets in self.cleft_frame.winfo_children():
             widgets.configure(state='disable')
         for widgets in self.inner_frame.winfo_children():
-            if str(widgets) == ".!frame.!frame.!frame3.!labelframe.!scrollbar":
+            if ".!scrollbar" in str(widgets):
                 pass
             else:
                 widgets.configure(state='disable')
@@ -891,7 +924,7 @@ class Pre_process:
             widgets.configure(state='normal')
 
         for widgets in self.inner_frame.winfo_children():
-            if str(widgets) == ".!frame.!frame.!frame3.!labelframe.!scrollbar":
+            if ".!scrollbar" in str(widgets):
                 pass
             else:
                 widgets.configure(state='normal')
@@ -1055,15 +1088,6 @@ class about:
         self.win.geometry("+%d+%d" % (x + w/2, y + h/2))
 
 
-class save:
-    def __init__(self, root):
-        global project
-        if project == "":
-            filename = filedialog.asksaveasfilename(initialdir="/", title="Save")
-        project = "| Test"
-        root.title(f'SEPparser GUI {project}')
-
-
 def main():
 
     def menu_theme():
@@ -1071,6 +1095,49 @@ def main():
         bg = s.lookup('TFrame', 'background')
         menubar.config(background=bg)
         tool_menu.config(bg=bg)
+
+    def proj(menuitem):
+        global project
+        global settings
+
+        if menuitem == "Open":
+            filename = filedialog.askopenfilename(initialdir="/",
+                                                  title=menuitem,
+                                                  filetypes=(("SEPgui project files", "*.sep_proj"),))
+            if filename:
+                project = filename
+                with open(project, "r") as jsonfile:
+                    settings = json.load(jsonfile)
+                jsonfile.close()
+                Pre_process(root, True)
+
+        if menuitem != "Open" and project == "" or menuitem == "Save As":
+            filename = filedialog.asksaveasfilename(initialdir="/",
+                                                    title=menuitem,
+                                                    defaultextension=".sep_proj",
+                                                    filetypes=(("SEPgui project files", "*.sep_proj"),))
+            if filename:
+                project = filename
+                with open(project, "w") as jsonfile:
+                    json.dump(settings, jsonfile)
+                jsonfile.close()
+
+        if project != "" and menuitem == "Save":
+            with open(project, "w") as jsonfile:
+                json.dump(settings, jsonfile)
+            jsonfile.close()
+
+        if menuitem == "Unload":
+            settings = json.loads('{"v": "-d", "kapemode": "", "output": "", "path": "c:/", "outpath": "", "append": "", "tvalue": 0, "tz": " ", "tzdata": "", "logging": "", "verbose": "", "e": "", "qd": "", "hd": "", "hf": "", "eb": "", "cmd": ""}')
+            project = ''
+            pro_menu.entryconfig("Unload", state="disabled")
+            root.title('SEPparser GUI')
+            Pre_process(root, False)
+
+        if project:
+            pro_menu.entryconfig("Unload", state="normal")
+            proj_name = project.replace('/', '\\')
+            root.title(f'SEPparser GUI | {proj_name}')
 
     root = ThemedTk()
     ttk.Style().theme_use(data['theme'])
@@ -1099,9 +1166,10 @@ def main():
     file_menu.add_cascade(label="Project", menu=pro_menu)
     file_menu.add_separator()
     file_menu.add_command(label="Exit", command=lambda: quit(root))
-    pro_menu.add_command(label="Load")
-    pro_menu.add_command(label="Save", command=lambda: save(root))
-    pro_menu.add_command(label="Save As")
+    pro_menu.add_command(label="Load", command=lambda: proj("Open"))
+    pro_menu.add_command(label="Save", command=lambda: proj("Save"), accelerator="Ctrl+S")
+    pro_menu.add_command(label="Save As", command=lambda: proj("Save As"))
+    pro_menu.add_command(label="Unload", state="disabled", command=lambda: proj("Unload"))
     help_menu.add_command(label="About", command=lambda: about(root))
     tool_menu.add_cascade(label="Skins", menu=submenu)
     menubar.add_cascade(label="File", menu=file_menu)
@@ -1109,7 +1177,9 @@ def main():
     menubar.add_cascade(label="Help", menu=help_menu)
     submenu.entryconfig(submenu.index(ttk.Style().theme_use()), background='grey')
 
-    Pre_process(root)
+#    root.bind_all("<Control-s", lambda: proj("Save"))
+
+    Pre_process(root, False)
 
     root.mainloop()
 
