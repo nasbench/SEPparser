@@ -725,6 +725,9 @@ class Pre_process:
         self.sg.grid(row=2, sticky='se')
 
     def check_expression(self, *args):
+        print(self.ent1.winfo_width())
+        print(self.ent2.winfo_width())
+        print(self.ent3.winfo_width())
         self.outputtext.config(state=tk.NORMAL)
         self.updtsettings()
         varContent = self.v.get()
@@ -739,7 +742,7 @@ class Pre_process:
             self.ent1['values'] = sorted(data['file'].split('|'))
             self.cbx7.configure(state='normal')
             self.cbx9.configure(state='normal')
-
+        self.ent1.bind('<Button-1>', lambda event=None, e=self.ent1['values'], n=250: self.on_combo_configure(e, n))
         pathContent = self.path.get()
 
         if self.output.get() == "-o":
@@ -749,7 +752,7 @@ class Pre_process:
             self.ent2.configure(state='disable')
             self.btn2.configure(state='disable')
             self.outpath.set('')
-
+        self.ent2.bind('<Button-1>', lambda event=None, e=self.ent2['values'], n=self.ent2.winfo_width(): self.on_combo_configure(e, n))
         # Optional arguments
         opt = ''
         if len(self.kapemode.get()) > 1:
@@ -821,6 +824,7 @@ class Pre_process:
                 self.ent3['values'] = sorted(data['registrationInfo'].split('|'))
                 if len(self.tzdata.get()) > 0:
                     opt += f' "{self.tzdata.get()}"'
+            self.ent3.bind('<Button-1>', lambda event=None, e=self.ent3['values'], n=self.ent3.winfo_width(): self.on_combo_configure(e, n))
         self.outputtext.delete(1.0, tk.END)  # clear the outputtext text widget
         self.outputtext.insert(tk.END, (f'SEPparser.exe {varContent} "{pathContent}"{opt}').replace('/', '\\'))
         self.outputtext.config(state=tk.DISABLED)
@@ -980,12 +984,11 @@ class Pre_process:
         settings['eb'] = f"{self.eb.get()}"
         settings['cmd'] = f"{self.cmd.get()}"
 
-#    def on_combo_configure(event):
-#        font = tkFont.nametofont(str(event.widget.cget('font')))
-#        width = font.measure(fruit[0] + "0") - event.width
-#        res = len(max(test_list, key = len))
-#        style = ttk.Style()
-#        style.configure('TCombobox', postoffset=(0, 0, width, 0))
+    def on_combo_configure(self, combo, n):
+        test = max(combo, key=len)
+        width = max(0, tkFont.nametofont('TkTextFont').measure(test.strip() + '0') - n)
+        style = ttk.Style()
+        style.configure('TCombobox', postoffset=(0, 0, width, 0))
 
 
 class quit:
